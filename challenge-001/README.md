@@ -105,6 +105,7 @@
     ```
 
   - **Warning**
+
     Reference of a `$value` and the last array element remain even after the foreach loop. It is recommended to destroy it by `unset()`. Otherwise you will experience the following behavior:
 
     ```php
@@ -143,9 +144,24 @@
     ```
 
 - Homework
+
   Create an array of any three usernames - perhaps for a "Top Performing Users" section of your website. Then, create a loop that displays each username within a list item.
 
 ## 7. Associative Arrays
+
+- About
+
+  Let's stick with arrays just a little longer. In this episode, you'll learn the syntax for accessing individual items within an array. You'll also learn about associative arrays, which allow you to associate a key with each value.
+
+- Things You'll Learn
+
+  - Array Access
+  - Key-Value Pairs
+  - Data
+
+- Homework
+
+  Extend the book list from this episode's example to also include and display the release year immediately after the book's title.
 
 ## 8. Functions and Filters
 
