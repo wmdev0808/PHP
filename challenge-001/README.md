@@ -181,6 +181,39 @@
 
 ## 9. Lambda Functions
 
+- About
+
+  Buckle up, because we have a lot to cover in this episode! As part of our first code refactor, we'll discuss what lambda functions are, as well as when and why you might reach for them.
+
+  ```php
+  function filter($items, $fn)
+  {
+    $filteredItems = [];
+
+    foreach ($items as $item) {
+      if ($fn($item)) {
+        $filteredItems[] = $item;
+      }
+    }
+
+    return $filteredItems;
+  }
+
+  $filteredItems = filter($books, function ($book) {
+    return $book['releaseYear'] < 2000;
+  });
+  ```
+
+- Things You'll Learn
+
+  - Lambdas
+  - Extract Variable
+  - array_filter
+
+- Homework
+
+  Update your book filtering logic from this episode to only display books that were first published between the years 1950 and 2020. Hint - the PHP equivalent of "and" is `&&`.
+
 ## 10. Separate Logic From the Template
 
 ## 11. Technical Check-in #1(With Quiz)
