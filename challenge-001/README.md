@@ -165,6 +165,20 @@
 
 ## 8. Functions and Filters
 
+- About
+
+  Congratulations for making it this far! Let's take things a step further now and review functions. You can think of functions as the verbs of the programming world.
+
+- Things You'll Learn
+
+  - Functions
+  - Array Filtering
+  - Checking for Equality
+
+- Homework
+
+  Create an array of your favorites movies, including their respective release dates. Then, write a function that filters your list of movies down to only those that were released in the year 2000 or higher. Display the results in an unordered list.
+
 ## 9. Lambda Functions
 
 ## 10. Separate Logic From the Template
