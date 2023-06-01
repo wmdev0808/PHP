@@ -186,7 +186,7 @@
   Buckle up, because we have a lot to cover in this episode! As part of our first code refactor, we'll discuss what lambda functions are, as well as when and why you might reach for them.
 
   ```php
-  function filter($items, $fn)
+  function filter($items, $fn) // $fn: anonymous function is called a lambda
   {
     $filteredItems = [];
 
@@ -203,6 +203,247 @@
     return $book['releaseYear'] < 2000;
   });
   ```
+
+- **Anonymous functions**
+
+  - Anonymous functions, also known as `closures`, allow the creation of functions which have no specified name. They are most useful as the value of `callable` parameters, but they have many other uses.
+
+  - Anonymous functions are implemented using the `Closure` class.
+
+    - **Example #1 Anonymous function example**
+
+      ```php
+      <?php
+      echo preg_replace_callback('~-([a-z])~', function ($match) {
+          return strtoupper($match[1]);
+      }, 'hello-world');
+      // outputs helloWorld
+      ?>
+      ```
+
+  - Closures can also be used as the values of variables; PHP automatically converts such expressions into instances of the `Closure` internal class. Assigning a closure to a variable uses the same syntax as any other assignment, including the trailing semicolon:
+
+    - **Example #2 Anonymous function variable assignment example**
+
+      ```php
+      <?php
+      $greet = function($name) {
+          printf("Hello %s\r\n", $name);
+      };
+
+      $greet('World');
+      $greet('PHP');
+      ?>
+      ```
+
+  - Closures may also inherit variables from the parent scope. Any such variables must be passed to the use language construct. As of PHP 7.1, these variables must not include `superglobals`, `$this`, or variables with the same name as a parameter. A return type declaration of the function has to be placed after the use clause.
+
+    - **Example #3 Inheriting variables from the parent scope**
+
+      ```php
+      <?php
+      $message = 'hello';
+
+      // No "use"
+      $example = function () {
+          var_dump($message);
+      };
+      $example();
+
+      // Inherit $message
+      $example = function () use ($message) {
+          var_dump($message);
+      };
+      $example();
+
+      // Inherited variable's value is from when the function
+      // is defined, not when called
+      $message = 'world';
+      $example();
+
+      // Reset message
+      $message = 'hello';
+
+      // Inherit by-reference
+      $example = function () use (&$message) {
+          var_dump($message);
+      };
+      $example();
+
+      // The changed value in the parent scope
+      // is reflected inside the function call
+      $message = 'world';
+      $example();
+
+      // Closures can also accept regular arguments
+      $example = function ($arg) use ($message) {
+          var_dump($arg . ' ' . $message);
+      };
+      $example("hello");
+
+      // Return type declaration comes after the use clause
+      $example = function () use ($message): string {
+          return "hello $message";
+      };
+      var_dump($example());
+      ?>
+      ```
+
+    - The above example will output something similar to:
+
+      ```bash
+      Notice: Undefined variable: message in /example.php on line 6
+      NULL
+      string(5) "hello"
+      string(5) "hello"
+      string(5) "hello"
+      string(5) "world"
+      string(11) "hello world"
+      string(11) "hello world"
+      ```
+
+    - As of PHP 8.0.0, the list of scope-inherited variables may include a trailing comma, which will be ignored.
+
+  - Inheriting variables from the parent scope is not the same as using global variables. Global variables exist in the global scope, which is the same no matter what function is executing. The parent scope of a closure is the function in which the closure was declared (not necessarily the function it was called from). See the following example:
+
+    - **Example #4 Closures and scoping**
+
+      ```php
+      <?php
+      // A basic shopping cart which contains a list of added products
+      // and the quantity of each product. Includes a method which
+      // calculates the total price of the items in the cart using a
+      // closure as a callback.
+      class Cart
+      {
+          const PRICE_BUTTER  = 1.00;
+          const PRICE_MILK    = 3.00;
+          const PRICE_EGGS    = 6.95;
+
+          protected $products = array();
+
+          public function add($product, $quantity)
+          {
+              $this->products[$product] = $quantity;
+          }
+
+          public function getQuantity($product)
+          {
+              return isset($this->products[$product]) ? $this->products[$product] :
+                    FALSE;
+          }
+
+          public function getTotal($tax)
+          {
+              $total = 0.00;
+
+              $callback =
+                  function ($quantity, $product) use ($tax, &$total)
+                  {
+                      $pricePerItem = constant(__CLASS__ . "::PRICE_" .
+                          strtoupper($product));
+                      $total += ($pricePerItem * $quantity) * ($tax + 1.0);
+                  };
+
+              array_walk($this->products, $callback);
+              return round($total, 2);
+          }
+      }
+
+      $my_cart = new Cart;
+
+      // Add some items to the cart
+      $my_cart->add('butter', 1);
+      $my_cart->add('milk', 3);
+      $my_cart->add('eggs', 6);
+
+      // Print the total with a 5% sales tax.
+      print $my_cart->getTotal(0.05) . "\n";
+      // The result is 54.29
+      ?>
+      ```
+
+    - Example #5 Automatic binding of $this
+
+      ```php
+      <?php
+
+      class Test
+      {
+          public function testing()
+          {
+              return function() {
+                  var_dump($this);
+              };
+          }
+      }
+
+      $object = new Test;
+      $function = $object->testing();
+      $function();
+
+      ?>
+      ```
+
+    - The above example will output:
+
+      ```bash
+      object(Test)#1 (0) {
+      }
+      ```
+
+    - When declared in the context of a class, the current class is automatically bound to it, making $this available inside of the function's scope. If this automatic binding of the current class is not wanted, then `static anonymous functions` may be used instead.
+
+- **Static anonymous functions**
+
+  - Anonymous functions may be declared statically. This prevents them from having the current class automatically bound to them. Objects may also not be bound to them at runtime.
+
+  - **Example #6 Attempting to use $this inside a static anonymous function**
+
+    ```php
+    <?php
+
+    class Foo
+    {
+        function __construct()
+        {
+            $func = static function() {
+                var_dump($this);
+            };
+            $func();
+        }
+    };
+    new Foo();
+
+    ?>
+    ```
+
+    - The above example will output:
+
+      ```bash
+      Notice: Undefined variable: this in %s on line %d
+      NULL
+      ```
+
+  - **Example #7 Attempting to bind an object to a static anonymous function**
+
+    ```php
+    <?php
+
+    $func = static function() {
+        // function body
+    };
+    $func = $func->bindTo(new stdClass);
+    $func();
+
+    ?>
+    ```
+
+    - The above example will output:
+
+      ```bash
+      Warning: Cannot bind an instance to a static closure in %s on line %d
+      ```
 
 - Things You'll Learn
 
@@ -226,6 +467,231 @@
   - require and include
 
 ## 11. Technical Check-in #1(With Quiz)
+
+- About
+
+  Before we move on to section two, let's do a quick technical check-in to ensure that everything you've learned so far has been committed to memory. And don't forget to complete the quiz before continuing.
+
+- Things You'll Learn
+
+  - Variables
+  - Conditionals
+  - Loops
+  - Functions
+
+- **PHP for Beginners: Check-In #1**
+
+  - Quesiton 1
+
+    Which character is required at the beginning of any PHP variable?
+
+    ```php
+    // Example
+    ...name = "Joe";
+    ```
+
+    - [ ] A: `%`
+    - [x] B: `$`
+    - [ ] C: `*`
+    - [ ] D: `@`
+
+  - Question 2:
+
+    To render a string on the page, which PHP keyword might we use?
+
+    ```php
+    ... "Hello World";
+    ```
+
+    - [ ] A: `display`
+    - [ ] B: `show`
+    - [ ] C: `put`
+    - [x] D: `echo`
+
+  - Question 3
+
+    What is the correct syntax for creating a list of, say, popular baby names?
+
+    ```php
+    $popularNames = ...;
+    ```
+
+    - [ ] A:
+
+      ```php
+      {'Oliver', 'Violet', 'Noah', 'Aurora'}
+      ```
+
+    - [ ] B:
+
+      ```php
+      ['Oliver' 'Violet' 'Noah' 'Aurora']
+      ```
+
+    - [ ] C:
+
+      ```php
+      Arrizay('Oliver', 'Violet', 'Noah', 'Aurora')
+      ```
+
+    - [x] D:
+
+      ```php
+      ['Oliver', 'Violet', 'Noah', 'Aurora']
+      ```
+
+  - Question 4
+
+    True or False: Arrays can optionally include keys.
+
+    - [x] A: True
+
+    - [ ] B: False
+
+  - Question 5
+
+    Which of the following will correctly create the attributes for a blog post?
+
+    ```php
+    $post = ...;
+    ```
+
+    - [ ] A:
+
+      ```php
+      [ 'title': 'My Blog Post', 'author': 'LaryRobot' ]
+      ```
+
+    - [x] B:
+
+      ```php
+      [ 'title' => 'My Blog Post', 'author' => 'LaryRobot' ]
+      ```
+
+    - [ ] C:
+
+      ```php
+      [ title => My Blog Post, author => LaryRobot ]
+      ```
+
+    - [ ] D:
+
+      ```php
+      [ title: 'My Blog Post', author: 'LaryRobot' ]
+      ```
+
+  - Question 6
+
+    How might we check if the appointment has NOT been confirmed?
+
+    ```php
+    $confirmed = false;
+
+    if (...) {
+      echo 'This appointment has not yet been confirmed.';
+    }
+    ```
+
+    - [ ] A:
+
+      ```php
+      $confirmed
+      ```
+
+    - [x] B:
+
+      ```php
+      !$confirmed
+      ```
+
+    - [ ] C:
+
+      ```php
+      is not $confirmed
+      ```
+
+    - [ ] D:
+
+      ```php
+      !!$confirmed
+      ```
+
+  - Question 7
+
+    Which keyword might we use to loop over a list of books?
+
+    ```php
+    $books = ['Frankenstein', 'Animal Farm', '1984'];
+
+    ... ($books as $book) {
+        echo $book;
+    }
+    ```
+
+    - [x] A: `foreach`
+
+    - [ ] B: `for each`
+
+    - [ ] C: `iterate`
+
+    - [ ] D: `loop`
+
+  - Question 8
+
+    If a function should return a value, which keyword should we use?
+
+    ```php
+    function greet($thing) {
+      ... "Hello there, {$thing}";
+    }
+    ```
+
+    - [ ] A: send
+
+    - [ ] B: respond
+
+    - [x] C: return
+
+    - [ ] D: back
+
+  - Question 9
+
+    What might we call a function that does not have a name?
+
+    ```php
+    // Example of an ... function.
+    $isAdult = function ($person) {
+      return $person['age'] >= 18;
+    }
+
+    $adults = array_filter($people, $isAdult);
+    ```
+
+    - [ ] A: invalid
+
+    - [ ] B: unnamed
+
+    - [ ] C: unassigned
+
+    - [x] D: anonymous
+
+  - Question 10
+
+    What is the correct way to determine equality?
+
+    ```php
+      function isManager($person) {
+        return $person['role'] ... 'Manager';
+      }
+    ```
+
+    - [ ] A: =
+
+    - [x] B: ===
+
+    - [ ] C: <===>
+
+    - [ ] D: equals
 
 # 2. Dynamic Web Applications
 
