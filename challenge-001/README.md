@@ -70,6 +70,81 @@
 
 ## 6. Arrays
 
+- About
+
+  At this point, you know how to create a variable for a primitive string or number. But what about situations when we want to declare a collection, or list of things? A list of usernames, or book titles, or tweets? In these situations, we can reach for arrays.
+
+- Things You'll Learn
+
+  - Arrays
+  - Foreach
+  - Alternative Syntax
+
+- Foreach
+
+  - Syntax:
+
+    ```php
+    foreach (iterable_expression as $value)
+        statement
+    foreach (iterable_expression as $key => $value)
+        statement
+    ```
+
+  - In order to be able to directly modify array elements within the loop precede `$value` with `&`. In that case the value will be assigned by reference.
+
+    ```php
+    <?php
+    $arr = array(1, 2, 3, 4);
+    foreach ($arr as &$value) {
+        $value = $value * 2;
+    }
+    // $arr is now array(2, 4, 6, 8)
+    unset($value); // break the reference with the last element
+    ?>
+    ```
+
+  - **Warning**
+    Reference of a `$value` and the last array element remain even after the foreach loop. It is recommended to destroy it by `unset()`. Otherwise you will experience the following behavior:
+
+    ```php
+    <?php
+    $arr = array(1, 2, 3, 4);
+    foreach ($arr as &$value) {
+        $value = $value * 2;
+    }
+    // $arr is now array(2, 4, 6, 8)
+
+    // without an unset($value), $value is still a reference to the last item: $arr[3]
+
+    foreach ($arr as $key => $value) {
+        // $arr[3] will be updated with each value from $arr...
+        echo "{$key} => {$value} ";
+        print_r($arr);
+    }
+    // ...until ultimately the second-to-last value is copied onto the last value
+
+    // output:
+    // 0 => 2 Array ( [0] => 2, [1] => 4, [2] => 6, [3] => 2 )
+    // 1 => 4 Array ( [0] => 2, [1] => 4, [2] => 6, [3] => 4 )
+    // 2 => 6 Array ( [0] => 2, [1] => 4, [2] => 6, [3] => 6 )
+    // 3 => 6 Array ( [0] => 2, [1] => 4, [2] => 6, [3] => 6 )
+    ?>
+    ```
+
+  - It is possible to iterate a constant array's value by reference:
+
+    ```php
+    <?php
+    foreach (array(1, 2, 3, 4) as &$value) {
+        $value = $value * 2;
+    }
+    ?>
+    ```
+
+- Homework
+  Create an array of any three usernames - perhaps for a "Top Performing Users" section of your website. Then, create a loop that displays each username within a list item.
+
 ## 7. Associative Arrays
 
 ## 8. Functions and Filters
