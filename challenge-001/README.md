@@ -216,6 +216,15 @@
 
 ## 10. Separate Logic From the Template
 
+- About
+
+  Before we move on to the technical check-in for this chapter, let's set aside a bit of time to discuss code organization and why we might want to separate our PHP logic from the view, or HTML.
+
+- Things You'll Learn
+  - Code Organization
+  - Logic Separation
+  - require and include
+
 ## 11. Technical Check-in #1(With Quiz)
 
 # 2. Dynamic Web Applications
