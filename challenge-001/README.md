@@ -697,6 +697,34 @@
 
 ## 12. Page Links
 
+- About
+
+  Welcome to section two! While section one focused entirely on the initial fundamentals of PHP, now, we'll move on and learn what it looks like to build a typical PHP application with a MySQL database.
+
+- Things You'll Learn
+
+  - Page Linking
+  - Templates
+  - TailwindCSS
+
+- TailwindCSS
+
+  - References:
+
+    - Tailwind CSS:
+
+      https://tailwindcss.com/
+
+    - Tailwind UI:
+
+      https://tailwindui.com/
+
+  - We'll use a Tailwind CSS UI Component, `Stacked Layouts - Dark nav with white page header` at https://tailwindui.com/components/application-ui/application-shells/stacked
+
+- Homework
+
+  Create a fourth page, called "Our Mission," and link to it from your navigation menu.
+
 ## 13. PHP Partials
 
 ## 14. Superglobals and Current Page Styling
