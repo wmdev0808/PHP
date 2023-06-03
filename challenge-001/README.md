@@ -917,6 +917,547 @@
 
 ## 15. Make a PHP Router
 
+- About
+
+  I think your PHP skills have now matured to the point that you're ready to build a custom PHP router from scratch. This will give us the chance to discuss code organization, response codes, and more.
+
+- Things You'll Learn
+
+  - Routers
+  - Status Code
+  - Code Organization
+
+- Status Code
+
+  - `http_response_code`
+
+    - (PHP 5 >= 5.4.0, PHP 7, PHP 8)
+
+    - `http_response_code` — Get or Set the HTTP response code
+
+    - Description ¶
+
+      ```php
+      http_response_code(int $response_code = 0): int|bool
+      ```
+
+      - Gets or sets the HTTP response status code.
+
+    - Parameters ¶
+
+      - `response_code`
+
+        - The optional `response_code` will set the response code.
+
+    - Return Values ¶
+
+      - If `response_code` is provided, then the previous status code will be returned. If `response_code` is not provided, then the current status code will be returned. Both of these values will default to a 200 status code if used in a web server environment.
+
+      - `false` will be returned if `response_code` is not provided and it is not invoked in a web server environment (such as from a CLI application).
+      - `true` will be returned if `response_code` is provided and it is not invoked in a web server environment (but only when no previous response status has been set).
+
+    - Examples
+
+      - **Example #1 Using http_response_code() in a web server environment**
+
+        ```php
+        <?php
+
+        // Get the current response code and set a new one
+        var_dump(http_response_code(404));
+
+        // Get the new response code
+        var_dump(http_response_code());
+        ?>
+        ```
+
+        - The above example will output:
+
+          ```bash
+          int(200)
+          int(404)
+          ```
+
+      - **Example #2 Using http_response_code() in a CLI environment**
+
+        ```php
+        <?php
+
+        // Get the current default response code
+        var_dump(http_response_code());
+
+        // Set a response code
+        var_dump(http_response_code(201));
+
+        // Get the new response code
+        var_dump(http_response_code());
+        ?>
+        ```
+
+        - The above example will output:
+
+          ```bash
+          bool(false)
+          bool(true)
+          int(201)
+          ```
+
+      - If your version of PHP does not include this function:
+
+        ```php
+        <?php
+
+        if (!function_exists('http_response_code')) {
+            function http_response_code($code = NULL) {
+
+                if ($code !== NULL) {
+
+                    switch ($code) {
+                        case 100: $text = 'Continue'; break;
+                        case 101: $text = 'Switching Protocols'; break;
+                        case 200: $text = 'OK'; break;
+                        case 201: $text = 'Created'; break;
+                        case 202: $text = 'Accepted'; break;
+                        case 203: $text = 'Non-Authoritative Information'; break;
+                        case 204: $text = 'No Content'; break;
+                        case 205: $text = 'Reset Content'; break;
+                        case 206: $text = 'Partial Content'; break;
+                        case 300: $text = 'Multiple Choices'; break;
+                        case 301: $text = 'Moved Permanently'; break;
+                        case 302: $text = 'Moved Temporarily'; break;
+                        case 303: $text = 'See Other'; break;
+                        case 304: $text = 'Not Modified'; break;
+                        case 305: $text = 'Use Proxy'; break;
+                        case 400: $text = 'Bad Request'; break;
+                        case 401: $text = 'Unauthorized'; break;
+                        case 402: $text = 'Payment Required'; break;
+                        case 403: $text = 'Forbidden'; break;
+                        case 404: $text = 'Not Found'; break;
+                        case 405: $text = 'Method Not Allowed'; break;
+                        case 406: $text = 'Not Acceptable'; break;
+                        case 407: $text = 'Proxy Authentication Required'; break;
+                        case 408: $text = 'Request Time-out'; break;
+                        case 409: $text = 'Conflict'; break;
+                        case 410: $text = 'Gone'; break;
+                        case 411: $text = 'Length Required'; break;
+                        case 412: $text = 'Precondition Failed'; break;
+                        case 413: $text = 'Request Entity Too Large'; break;
+                        case 414: $text = 'Request-URI Too Large'; break;
+                        case 415: $text = 'Unsupported Media Type'; break;
+                        case 500: $text = 'Internal Server Error'; break;
+                        case 501: $text = 'Not Implemented'; break;
+                        case 502: $text = 'Bad Gateway'; break;
+                        case 503: $text = 'Service Unavailable'; break;
+                        case 504: $text = 'Gateway Time-out'; break;
+                        case 505: $text = 'HTTP Version not supported'; break;
+                        default:
+                            exit('Unknown http status code "' . htmlentities($code) . '"');
+                        break;
+                    }
+
+                    $protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
+
+                    header($protocol . ' ' . $code . ' ' . $text);
+
+                    $GLOBALS['http_response_code'] = $code;
+
+                } else {
+
+                    $code = (isset($GLOBALS['http_response_code']) ? $GLOBALS['http_response_code'] : 200);
+
+                }
+
+                return $code;
+
+            }
+        }
+
+        ?>
+        ```
+
+- require
+
+  - (PHP 4, PHP 5, PHP 7, PHP 8)
+
+  - `require` is identical to `include` except upon failure it will also produce a fatal `E_COMPILE_ERROR` level error. In other words, it will halt the script whereas `include` only emits a warning (`E_WARNING`) which allows the script to continue.
+
+  - Example
+
+    - Remember, when using require that it is a statement, not a function. It's not necessary to write:
+
+    ```php
+    <?php
+    require('somefile.php');
+    ?>
+
+    The following:
+    <?php
+    require 'somefile.php';
+    ?>
+    ```
+
+    - Is preferred, it will prevent your peers from giving you a hard time and a trivial conversation about what require really is.
+
+- die
+
+  - (PHP 4, PHP 5, PHP 7, PHP 8)
+
+  - die — Equivalent to exit
+
+  - Description ¶
+
+    - This language construct is equivalent to `exit()`.
+
+  - Note:
+
+    - It is poor design to rely on die() for error handling in a web site because it results in an ugly experience for site users: a broken page and - if they're lucky - an error message that is no help to them at all. As far as they are concerned, when the page breaks, the whole site might as well be broken.
+
+    - If you ever want the public to use your site, always design it to handle errors in a way that will allow them to continue using it if possible. If it's not possible and the site really is broken, make sure that you find out so that you can fix it. die() by itself won't do either.
+
+    - If a supermarket freezer breaks down, a customer who wanted to buy a tub of ice cream doesn't expect to be kicked out of the building.
+
+- exit
+
+  - (PHP 4, PHP 5, PHP 7, PHP 8)
+
+  - exit — Output a message and terminate the current script
+
+  - Description ¶
+
+    ```php
+    exit(string $status = ?): void
+
+    exit(int $status): void
+    ```
+
+    - Terminates execution of the script. `Shutdown functions` and `object destructors` will always be executed even if exit is called.
+
+    - `exit` is a language construct and it can be called without parentheses if no `status` is passed.
+
+  - Parameters ¶
+
+    - status
+
+      - If `status` is a string, this function prints the `status` just before exiting.
+
+      - If `status` is an int, that value will be used as the exit status and not printed. Exit statuses should be in the range 0 to 254, the exit status 255 is reserved by PHP and shall not be used. The status 0 is used to terminate the program successfully.
+
+  - Return Values ¶
+
+    - No value is returned.
+
+  - Examples ¶
+
+    - **Example #1 exit example**
+
+      ```php
+      <?php
+
+      $filename = '/path/to/data-file';
+      $file = fopen($filename, 'r')
+          or exit("unable to open file ($filename)");
+
+      ?>
+      ```
+
+    - **Example #2 exit status example**
+
+      ```php
+      <?php
+
+      //exit program normally
+      exit;
+      exit();
+      exit(0);
+
+      //exit with an error code
+      exit(1);
+      exit(0376); //octal
+
+      ?>
+      ```
+
+    - **Example #3 Shutdown functions and destructors run regardless**
+
+      ```php
+      <?php
+      class Foo
+      {
+          public function __destruct()
+          {
+              echo 'Destruct: ' . __METHOD__ . '()' . PHP_EOL;
+          }
+      }
+
+      function shutdown()
+      {
+          echo 'Shutdown: ' . __FUNCTION__ . '()' . PHP_EOL;
+      }
+
+      $foo = new Foo();
+      register_shutdown_function('shutdown');
+
+      exit();
+      echo 'This will not be output.';
+      ?>
+      ```
+
+      - The above example will output:
+
+        ```bash
+        Shutdown: shutdown()
+        Destruct: Foo::__destruct()
+        ```
+
+  - Notes ¶
+
+    - Note: Because this is a language construct and not a function, it cannot be called using `variable functions`, or `named arguments`.
+
+    - Note:
+
+      - This language construct is equivalent to die().
+
+  - User Contributed Notes
+
+    - If you want to avoid calling `exit()` in FastCGI as per the comments below, but really, positively want to exit cleanly from nested function call or include, consider doing it the Python way:
+
+      - define an exception named `SystemExit`, throw it instead of calling `exit()` and catch it in index.php with an empty handler to finish script execution cleanly.
+
+      ```php
+      <?php
+
+      // file: index.php
+      class SystemExit extends Exception {}
+      try {
+        /* code code */
+      }
+      catch (SystemExit $e) { /* do nothing */ }
+      // end of file: index.php
+
+      // some deeply nested function or .php file
+
+      if (SOME_EXIT_CONDITION)
+        throw new SystemExit(); // instead of exit()
+
+      ?>
+      ```
+
+    - 2
+
+      ```php
+      <?php
+
+      if($_SERVER['SCRIPT_FILENAME'] == __FILE__ )
+        header('Location: /');
+
+      ?>
+      ```
+
+      - After sending the `Location:` header PHP _will_ continue parsing, and all code below the header() call will still be executed. So instead use:
+
+        ```php
+        <?php
+
+        if($_SERVER['SCRIPT_FILENAME'] == __FILE__)
+        {
+          header('Location: /');
+          exit;
+        }
+        ?>
+        ```
+
+- Variable functions
+
+  - PHP supports the concept of variable functions. This means that if a variable name has parentheses appended to it, PHP will look for a function with the same name as whatever the variable evaluates to, and will attempt to execute it. Among other things, this can be used to implement callbacks, function tables, and so forth.
+
+  - Variable functions won't work with language constructs such as `echo`, `print`, `unset()`, `isset(`), `empty()`, `include`, `require` and the like. Utilize wrapper functions to make use of any of these constructs as variable functions.
+
+  - **Example #1 Variable function example**
+
+    ```php
+    <?php
+    function foo() {
+        echo "In foo()<br />\n";
+    }
+
+    function bar($arg = '')
+    {
+        echo "In bar(); argument was '$arg'.<br />\n";
+    }
+
+    // This is a wrapper function around echo
+    function echoit($string)
+    {
+        echo $string;
+    }
+
+    $func = 'foo';
+    $func();        // This calls foo()
+
+    $func = 'bar';
+    $func('test');  // This calls bar()
+
+    $func = 'echoit';
+    $func('test');  // This calls echoit()
+    ?>
+    ```
+
+  - **Example #2 Variable method example**
+
+    ```php
+    <?php
+    class Foo
+    {
+        function Variable()
+        {
+            $name = 'Bar';
+            $this->$name(); // This calls the Bar() method
+        }
+
+        function Bar()
+        {
+            echo "This is Bar";
+        }
+    }
+
+    $foo = new Foo();
+    $funcname = "Variable";
+    $foo->$funcname();  // This calls $foo->Variable()
+
+    ?>
+    ```
+
+    - When calling static methods, the function call is stronger than the static property operator:
+
+  - **Example #3 Variable method example with static properties**
+
+    ```php
+    <?php
+    class Foo
+    {
+        static $variable = 'static property';
+        static function Variable()
+        {
+            echo 'Method Variable called';
+        }
+    }
+
+    echo Foo::$variable; // This prints 'static property'. It does need a $variable in this scope.
+    $variable = "Variable";
+    Foo::$variable();  // This calls $foo->Variable() reading $variable in this scope.
+
+    ?>
+    ```
+
+  - **Example #4 Complex callables**
+
+    ```php
+    <?php
+    class Foo
+    {
+        static function bar()
+        {
+            echo "bar\n";
+        }
+        function baz()
+        {
+            echo "baz\n";
+        }
+    }
+
+    $func = array("Foo", "bar");
+    $func(); // prints "bar"
+    $func = array(new Foo, "baz");
+    $func(); // prints "baz"
+    $func = "Foo::bar";
+    $func(); // prints "bar"
+    ?>
+    ```
+
+- Named Arguments
+
+  - PHP 8.0.0 introduced named arguments as an extension of the existing positional parameters. Named arguments allow passing arguments to a function based on the parameter name, rather than the parameter position. This makes the meaning of the argument self-documenting, makes the arguments order-independent and allows skipping default values arbitrarily.
+
+  - Named arguments are passed by prefixing the value with the parameter name followed by a colon. Using reserved keywords as parameter names is allowed. The parameter name must be an identifier, specifying dynamically is not allowed.
+
+  - **Example #15 Named argument syntax**
+
+    ```php
+    <?php
+    myFunction(paramName: $value);
+    array_foobar(array: $value);
+
+    // NOT supported.
+    function_name($variableStoringParamName: $value);
+    ?>
+    ```
+
+  - **Example #16 Positional arguments versus named arguments**
+
+    ```php
+    <?php
+    // Using positional arguments:
+    array_fill(0, 100, 50);
+
+    // Using named arguments:
+    array_fill(start_index: 0, count: 100, value: 50);
+    ?>
+    ```
+
+    - The order in which the named arguments are passed does not matter.
+
+  - **Example #17 Same example as above with a different order of parameters**
+
+    ```php
+    <?php
+    array_fill(value: 50, count: 100, start_index: 0);
+    ?>
+    ```
+
+  - Named arguments can be combined with positional arguments. In this case, the named arguments must come after the positional arguments. It is also possible to specify only some of the optional arguments of a function, regardless of their order.
+
+  - **Example #18 Combining named arguments with positional arguments**
+
+    ```php
+    <?php
+    htmlspecialchars($string, double_encode: false);
+    // Same as
+    htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401, 'UTF-8', false);
+    ?>
+    ```
+
+  - Passing the same parameter multiple times results in an Error exception.
+
+  - **Example #19 Error thrown when passing the same parameter multiple times**
+
+    ```php
+    <?php
+    function foo($param) { ... }
+
+    foo(param: 1, param: 2);
+    // Error: Named parameter $param overwrites previous argument
+    foo(1, param: 2);
+    // Error: Named parameter $param overwrites previous argument
+    ?>
+    ```
+
+  - As of PHP 8.1.0, it is possible to use named arguments after unpacking the arguments. A named argument must not override an already unpacked arguments.
+
+  - **Example #20 Use named arguments after unpacking**
+
+    ```php
+    <?php
+    function foo($a, $b, $c = 3, $d = 4) {
+      return $a + $b + $c + $d;
+    }
+
+    var_dump(foo(...[1, 2], d: 40)); // 46
+    var_dump(foo(...['b' => 2, 'a' => 1], d: 40)); // 46
+
+    var_dump(foo(...[1, 2], b: 20)); // Fatal error. Named parameter $b overwrites previous argument
+    ?>
+    ```
+
 ## 16. Create a MySQL Database
 
 ## 17. PDO First Steps
