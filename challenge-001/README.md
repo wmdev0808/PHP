@@ -738,6 +738,183 @@
 
 ## 14. Superglobals and Current Page Styling
 
+- About
+
+  Often, you'll need to apply styles or trigger certain logic based upon the current page. Luckily, we can use PHP's `$_SERVER` superglobal array to dynamically determine the current page.
+
+- Things You'll Learn
+
+  - Superglobals
+  - Ternary Operator
+  - var_dump
+
+- Superglobals
+
+  - `Superglobals` — Built-in variables that are always available in all scopes
+
+  - Description
+
+    Several predefined variables in PHP are "superglobals", which means they are available in all scopes throughout a script. There is no need to do `global $variable;` to access them within functions or methods.
+
+    - These superglobal variables are:
+
+      - `$GLOBALS`
+      - `$_SERVER`
+      - `$_GET`
+      - `$_POST`
+      - `$_FILES`
+      - `$_COOKIE`
+      - `$_SESSION`
+      - `$_REQUEST`
+      - `$_ENV`
+
+- Ternary Operator
+
+  - Another conditional operator is the "?:" (or ternary) operator.
+
+  - **Example #3 Assigning a default value**
+
+    ```php
+    <?php
+    // Example usage for: Ternary Operator
+    $action = (empty($_POST['action'])) ? 'default' : $_POST['action'];
+
+    // The above is identical to this if/else statement
+    if (empty($_POST['action'])) {
+        $action = 'default';
+    } else {
+        $action = $_POST['action'];
+    }
+    ?>
+    ```
+
+    - The expression `(expr1) ? (expr2) : (expr3)` evaluates to `expr2` if `expr1` evaluates to `true`, and `expr3` if `expr1` evaluates to `false`.
+
+  - It is possible to leave out the middle part of the ternary operator.
+
+    - Expression `expr1 ?: expr3` evaluates to the result of `expr1` if `expr1` evaluates to `true`, and `expr3` otherwise. `expr1` is only evaluated once in this case.
+
+  - Note: Please note that the `ternary` operator is an expression, and that it doesn't evaluate to a variable, but to the result of an expression. This is important to know if you want to return a variable by reference. The statement return `$var == 42 ? $a : $b;` in a return-by-reference function will therefore not work and a warning is issued.
+
+  - Note:
+
+    It is recommended to avoid "stacking" `ternary` expressions. PHP's behaviour when using more than one unparenthesized `ternary` operator within a single expression is non-obvious compared to other languages. Indeed prior to PHP 8.0.0, `ternary` expressions were evaluated left-associative, instead of right-associative like most other programming languages. Relying on left-associativity is deprecated as of PHP 7.4.0. As of PHP 8.0.0, the `ternary` operator is non-associative.
+
+    - **Example #4 Non-obvious Ternary Behaviour**
+
+      ```php
+      <?php
+      // on first glance, the following appears to output 'true'
+      echo (true ? 'true' : false ? 't' : 'f');
+
+      // however, the actual output of the above is 't' prior to PHP 8.0.0
+      // this is because ternary expressions are left-associative
+
+      // the following is a more obvious version of the same code as above
+      echo ((true ? 'true' : false) ? 't' : 'f');
+
+      // here, one can see that the first expression is evaluated to 'true', which
+      // in turn evaluates to (bool)true, thus returning the true branch of the
+      // second ternary expression.
+      ?>
+      ```
+
+  - Note:
+
+    Chaining of short-ternaries (?:), however, is stable and behaves reasonably. It will evaluate to the first argument that evaluates to a non-falsy value. Note that undefined values will still raise a warning.
+
+    - **Example #5 Short-ternary chaining**
+
+      ```php
+      <?php
+      echo 0 ?: 1 ?: 2 ?: 3, PHP_EOL; //1
+      echo 0 ?: 0 ?: 2 ?: 3, PHP_EOL; //2
+      echo 0 ?: 0 ?: 0 ?: 3, PHP_EOL; //3
+      ?>
+      ```
+
+- `var_dump`
+
+  - (PHP 4, PHP 5, PHP 7, PHP 8)
+
+  - `var_dump` — Dumps information about a variable
+
+  - Description:
+
+    ```php
+    var_dump(mixed $value, mixed ...$values): void
+    ```
+
+    - This function displays structured information about one or more expressions that includes its type and value. Arrays and objects are explored recursively with values indented to show structure.
+
+    - All public, private and protected properties of objects will be returned in the output unless the object implements a `__debugInfo()` method.
+
+    - Tip:
+
+      As with anything that outputs its result directly to the browser, the output-control functions can be used to capture the output of this function, and save it in a string (for example).
+
+  - Parameters:
+
+    - `value`
+
+      The expression to dump.
+
+    - `values`
+
+      Further expressions to dump.
+
+  - Return Values:
+
+    No value is returned.
+
+  - Examples
+
+    - **Example #1 var_dump() example**
+
+      ```php
+      <?php
+      $a = array(1, 2, array("a", "b", "c"));
+      var_dump($a);
+      ?>
+      ```
+
+      - The above example will output:
+
+        ```bash
+        array(3) {
+          [0]=>
+          int(1)
+          [1]=>
+          int(2)
+          [2]=>
+          array(3) {
+            [0]=>
+            string(1) "a"
+            [1]=>
+            string(1) "b"
+            [2]=>
+            string(1) "c"
+          }
+        }
+        ```
+
+      ```php
+      <?php
+
+      $b = 3.1;
+      $c = true;
+      var_dump($b, $c);
+
+      ?>
+      ```
+
+      - The above example will output:
+
+        ```bash
+        float(3.1)
+        bool(true)
+        ```
+
 ## 15. Make a PHP Router
 
 ## 16. Create a MySQL Database
