@@ -727,6 +727,15 @@
 
 ## 13. PHP Partials
 
+- About:
+
+  In the previous episode, we begrudgingly duplicated the same HTML for every PHP view. Let's fix that now by reaching for PHP partials.
+
+- Things You'll Learn
+
+  - Extract Partial
+  - Folder Structure
+
 ## 14. Superglobals and Current Page Styling
 
 ## 15. Make a PHP Router
