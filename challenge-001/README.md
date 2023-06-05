@@ -1460,6 +1460,20 @@
 
 ## 16. Create a MySQL Database
 
+- About
+
+  - We're now ready to begin interacting with a MySQL database. Before we write any PHP, let's first review how to connect to MySQL, and then create a database and table.
+
+- Things You'll Learn
+
+  - Databases
+  - Tables
+  - Columns
+
+- Homework
+
+  Play around with the `TablePlus` UI and become comfortable with creating tables, adding columns, and applying changes.
+
 ## 17. PDO First Steps
 
 ## 18. Extract a PHP Database Class
