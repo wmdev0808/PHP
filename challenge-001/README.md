@@ -1904,6 +1904,461 @@
 
 ## 20. SQL Injection Vulnerabilities Explained
 
+- About
+
+  In this episode, we'll review some examples of SQL injection and discuss why it's so important that you always assume that, on the web, a person is guilty until proven innocent.
+
+- Things You'll Learn
+
+  - SQL Injection
+  - Prepared Statements
+  - Parameter Binding
+
+- SQL Injection
+
+  - SQL injection is a technique where an attacker exploits flaws in application code responsible for building dynamic SQL queries. The attacker can gain access to privileged sections of the application, retrieve all information from the database, tamper with existing data, or even execute dangerous system-level commands on the database host. The vulnerability occurs when developers concatenate or interpolate arbitrary input in their SQL statements.
+
+  - **Example #1 Splitting the result set into pages ... and making superusers (PostgreSQL)**
+
+    - In the following example, user input is directly interpolated into the SQL query allowing the attacker to gain a superuser account in the database.
+
+    ```php
+    <?php
+
+    $offset = $_GET['offset']; // beware, no input validation!
+    $query  = "SELECT id, name FROM products ORDER BY name LIMIT 20 OFFSET $offset;";
+    $result = pg_query($conn, $query);
+
+    ?>
+    ```
+
+  - Normal users click on the 'next', 'prev' links where the `$offset` is encoded into the URL. The script expects that the incoming `$offset` is a number. However, what if someone tries to break in by appending the following to the URL
+
+  ```sql
+  0;
+  insert into pg_shadow(usename,usesysid,usesuper,usecatupd,passwd)
+      select 'crack', usesysid, 't','t','crack'
+      from pg_shadow where usename='postgres';
+  --
+  ```
+
+  - If it happened, the script would present a superuser access to the attacker. Note that 0; is to supply a valid offset to the original query and to terminate it.
+
+  - Note:
+
+    - It is a common technique to force the SQL parser to ignore the rest of the query written by the developer with -- which is the comment sign in SQL.
+
+  - A feasible way to gain passwords is to circumvent your search result pages. The only thing the attacker needs to do is to see if there are any submitted variables used in SQL statements which are not handled properly. These filters can be set commonly in a preceding form to customize WHERE, ORDER BY, LIMIT and OFFSET clauses in SELECT statements. If your database supports the UNION construct, the attacker may try to append an entire query to the original one to list passwords from an arbitrary table. It is strongly recommended to store only secure hashes of passwords instead of the passwords themselves.
+
+  - **Example #2 Listing out articles ... and some passwords (any database server)**
+
+    ```php
+    <?php
+
+    $query  = "SELECT id, name, inserted, size FROM products
+              WHERE size = '$size'";
+    $result = odbc_exec($conn, $query);
+
+    ?>
+    ```
+
+  - The static part of the query can be combined with another SELECT statement which reveals all passwords:
+
+    ```sql
+    '
+    union select '1', concat(uname||'-'||passwd) as name, '1971-01-01', '0' from usertable;
+    --
+    ```
+
+  - UPDATE and INSERT statements are also susceptible to such attacks.
+
+  - **Example #3 From resetting a password ... to gaining more privileges (any database server)**
+
+    ```php
+    <?php
+    $query = "UPDATE usertable SET pwd='$pwd' WHERE uid='$uid';";
+    ?>
+    ```
+
+  - If a malicious user submits the value ' or uid like'%admin% to $uid to change the admin's password, or simply sets $pwd to hehehe', trusted=100, admin='yes to gain more privileges, then the query will be twisted:
+
+    ```php
+    <?php
+
+    // $uid: ' or uid like '%admin%
+    $query = "UPDATE usertable SET pwd='...' WHERE uid='' or uid like '%admin%';";
+
+    // $pwd: hehehe', trusted=100, admin='yes
+    $query = "UPDATE usertable SET pwd='hehehe', trusted=100, admin='yes' WHERE
+    ...;";
+
+    ?>
+    ```
+
+  - While it remains obvious that an attacker must possess at least some knowledge of the database architecture to conduct a successful attack, obtaining this information is often very simple. For example, the code may be part of an open-source software and be publicly available. This information may also be divulged by closed-source code - even if it's encoded, obfuscated, or compiled - and even by your own code through the display of error messages. Other methods include the use of typical table and column names. For example, a login form that uses a 'users' table with column names 'id', 'username', and 'password'.
+
+  - **Example #4 Attacking the database host operating system (MSSQL Server)**
+
+    - A frightening example of how operating system-level commands can be accessed on some database hosts.
+
+    ```php
+    <?php
+
+    $query  = "SELECT * FROM products WHERE id LIKE '%$prod%'";
+    $result = mssql_query($query);
+
+    ?>
+    ```
+
+  - If attacker submits the value a%' exec master..xp_cmdshell 'net user test testpass /ADD' -- to $prod, then the $query will be:
+
+    ```php
+    <?php
+
+      $query  = "SELECT * FROM products
+                WHERE id LIKE '%a%'
+                exec master..xp_cmdshell 'net user test testpass /ADD' --%'";
+      $result = mssql_query($query);
+
+      ?>
+    ```
+
+  - MSSQL Server executes the SQL statements in the batch including a command to add a new user to the local accounts database. If this application were running as sa and the MSSQLSERVER service was running with sufficient privileges, the attacker would now have an account with which to access this machine.
+
+  - Note:
+
+    - Some examples above are tied to a specific database server, but it does not mean that a similar attack is impossible against other products. Your database server may be similarly vulnerable in another manner.
+
+  - Avoidance Techniques
+
+    - The recommended way to avoid SQL injection is by binding all data via prepared statements. Using parameterized queries isn't enough to entirely avoid SQL injection, but it is the easiest and safest way to provide input to SQL statements. All dynamic data literals in WHERE, SET, and VALUES clauses must be replaced with placeholders. The actual data will be bound during the execution and sent separately from the SQL command.
+
+    - Parameter binding can only be used for data. Other dynamic parts of the SQL query must be filtered against a known list of allowed values.
+
+    - **Example #5 Avoiding SQL injection by using PDO prepared statements**
+
+      ```php
+      <?php
+
+      // The dynamic SQL part is validated against expected values
+      $sortingOrder = $_GET['sortingOrder'] === 'DESC' ? 'DESC' : 'ASC';
+      $productId = $_GET['productId'];
+      // The SQL is prepared with a placeholder
+      $stmt = $pdo->prepare("SELECT * FROM products WHERE id LIKE ? ORDER BY price {$sortingOrder}");
+      // The value is provided with LIKE wildcards
+      $stmt->execute(["%{$productId}%"]);
+
+      ?>
+      ```
+
+    - Prepared statements are provided by PDO, by MySQLi, and by other database libraries.
+
+    - SQL injection attacks are mainly based on exploiting the code not being written with security in mind. Never trust any input, especially from the client side, even though it comes from a select box, a hidden input field, or a cookie. The first example shows that such a simple query can cause disasters.
+
+    - A defense-in-depth strategy involves several good coding practices:
+
+      - Never connect to the database as a superuser or as the database owner. Use always customized users with minimal privileges.
+
+      - Check if the given input has the expected data type. PHP has a wide range of input validating functions, from the simplest ones found in [Variable Functions](https://www.php.net/manual/en/ref.var.php) and in [Character Type Functions](https://www.php.net/manual/en/ref.ctype.php) (e.g. [is_numeric()](https://www.php.net/manual/en/function.is-numeric.php), [ctype_digit()](https://www.php.net/manual/en/function.ctype-digit.php) respectively) and onwards to the [Perl Compatible Regular Expressions](https://www.php.net/manual/en/ref.pcre.php) support.
+
+      - If the application expects numerical input, consider verifying data with [ctype_digit()](https://www.php.net/manual/en/function.ctype-digit.php), silently change its type using [settype()](https://www.php.net/manual/en/function.settype.php), or use its numeric representation by [sprintf()](https://www.php.net/manual/en/function.sprintf.php).
+      - If the database layer doesn't support binding variables then quote each non-numeric user-supplied value that is passed to the database with the database-specific string escape function (e.g. [mysql_real_escape_string()](https://www.php.net/manual/en/function.mysql-real-escape-string.php), `sqlite_escape_string()`, etc.). Generic functions like [addslashes()](https://www.php.net/manual/en/function.addslashes.php) are useful only in a very specific environment (e.g. MySQL in a single-byte character set with disabled `NO_BACKSLASH_ESCAPES`), so it is better to avoid them.
+      - Do not print out any database-specific information, especially about the schema, by fair means or foul. See also [Error Reporting](https://www.php.net/manual/en/security.errors.php) and [Error Handling and Logging Functions](https://www.php.net/manual/en/ref.errorfunc.php).
+
+- Prepared Statements
+
+  - The MySQL database supports prepared statements. A prepared statement or a parameterized statement is used to execute the same statement repeatedly with high efficiency and protect against SQL injections.
+
+  - _Basic workflow_
+
+    - The prepared statement execution consists of two stages: prepare and execute. At the prepare stage a statement template is sent to the database server. The server performs a syntax check and initializes server internal resources for later use.
+
+    - The MySQL server supports using anonymous, positional placeholder with ?.
+
+    - Prepare is followed by execute. During execute the client binds parameter values and sends them to the server. The server executes the statement with the bound values using the previously created internal resources.
+
+    - **Example #1 Prepared statement**
+
+      ```php
+      <?php
+
+      mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+      $mysqli = new mysqli("example.com", "user", "password", "database");
+
+      /* Non-prepared statement */
+      $mysqli->query("DROP TABLE IF EXISTS test");
+      $mysqli->query("CREATE TABLE test(id INT, label TEXT)");
+
+      /* Prepared statement, stage 1: prepare */
+      $stmt = $mysqli->prepare("INSERT INTO test(id, label) VALUES (?, ?)");
+
+      /* Prepared statement, stage 2: bind and execute */
+      $id = 1;
+      $label = 'PHP';
+      $stmt->bind_param("is", $id, $label); // "is" means that $id is bound as an integer and $label as a string
+
+      $stmt->execute();
+      ```
+
+  - _Repeated execution_
+
+    - A prepared statement can be executed repeatedly. Upon every execution the current value of the bound variable is evaluated and sent to the server. The statement is not parsed again. The statement template is not transferred to the server again.
+
+    - **Example #2 INSERT prepared once, executed multiple times**
+
+      ```php
+      <?php
+
+      mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+      $mysqli = new mysqli("example.com", "user", "password", "database");
+
+      /* Non-prepared statement */
+      $mysqli->query("DROP TABLE IF EXISTS test");
+      $mysqli->query("CREATE TABLE test(id INT, label TEXT)");
+
+      /* Prepared statement, stage 1: prepare */
+      $stmt = $mysqli->prepare("INSERT INTO test(id, label) VALUES (?, ?)");
+
+      /* Prepared statement, stage 2: bind and execute */
+      $stmt->bind_param("is", $id, $label); // "is" means that $id is bound as an integer and $label as a string
+
+      $data = [
+          1 => 'PHP',
+          2 => 'Java',
+          3 => 'C++'
+      ];
+      foreach ($data as $id => $label) {
+          $stmt->execute();
+      }
+
+      $result = $mysqli->query('SELECT id, label FROM test');
+      var_dump($result->fetch_all(MYSQLI_ASSOC));
+      ```
+
+      - The above example will output:
+
+        ```bash
+        array(3) {
+          [0]=>
+          array(2) {
+            ["id"]=>
+            string(1) "1"
+            ["label"]=>
+            string(3) "PHP"
+          }
+          [1]=>
+          array(2) {
+            ["id"]=>
+            string(1) "2"
+            ["label"]=>
+            string(4) "Java"
+          }
+          [2]=>
+          array(2) {
+            ["id"]=>
+            string(1) "3"
+            ["label"]=>
+            string(3) "C++"
+          }
+        }
+        ```
+
+    - Every prepared statement occupies server resources. Statements should be closed explicitly immediately after use. If not done explicitly, the statement will be closed when the statement handle is freed by PHP.
+
+    - Using a prepared statement is not always the most efficient way of executing a statement. A prepared statement executed only once causes more client-server round-trips than a non-prepared statement. This is why the SELECT is not run as a prepared statement above.
+
+    - Also, consider the use of the MySQL multi-INSERT SQL syntax for INSERTs. For the example, multi-INSERT requires fewer round-trips between the server and client than the prepared statement shown above.
+
+    - **Example #3 Less round trips using multi-INSERT SQL**
+
+      ```php
+      <?php
+
+      mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+      $mysqli = new mysqli("example.com", "user", "password", "database");
+
+      $mysqli->query("DROP TABLE IF EXISTS test");
+      $mysqli->query("CREATE TABLE test(id INT)");
+
+      $values = [1, 2, 3, 4];
+
+      $stmt = $mysqli->prepare("INSERT INTO test(id) VALUES (?), (?), (?), (?)");
+      $stmt->bind_param('iiii', ...$values);
+      $stmt->execute();
+      ```
+
+  - _Result set values data types_
+
+    - The MySQL Client Server Protocol defines a different data transfer protocol for prepared statements and non-prepared statements. Prepared statements are using the so called binary protocol. The MySQL server sends result set data "as is" in binary format. Results are not serialized into strings before sending. Client libraries receive binary data and try to convert the values into appropriate PHP data types. For example, results from an SQL INT column will be provided as PHP integer variables.
+
+    - **Example #4 Native datatypes**
+
+      ```php
+      <?php
+
+      mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+      $mysqli = new mysqli("example.com", "user", "password", "database");
+
+      /* Non-prepared statement */
+      $mysqli->query("DROP TABLE IF EXISTS test");
+      $mysqli->query("CREATE TABLE test(id INT, label TEXT)");
+      $mysqli->query("INSERT INTO test(id, label) VALUES (1, 'PHP')");
+
+      $stmt = $mysqli->prepare("SELECT id, label FROM test WHERE id = 1");
+      $stmt->execute();
+      $result = $stmt->get_result();
+      $row = $result->fetch_assoc();
+
+      printf("id = %s (%s)\n", $row['id'], gettype($row['id']));
+      printf("label = %s (%s)\n", $row['label'], gettype($row['label']));
+      ```
+
+      - The above example will output:
+
+        ```bash
+        id = 1 (integer)
+        label = PHP (string)
+        ```
+
+    - This behavior differs from non-prepared statements. By default, non-prepared statements return all results as strings. This default can be changed using a connection option. If the connection option is used, there are no differences.
+
+  - _Fetching results using bound variables_
+
+    - Results from prepared statements can either be retrieved by binding output variables, or by requesting a [mysqli_result](https://www.php.net/manual/en/class.mysqli-result.php) object.
+
+    - Output variables must be bound after statement execution. One variable must be bound for every column of the statements result set.
+
+    - **Example #5 Output variable binding**
+
+      ```php
+      <?php
+
+      mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+      $mysqli = new mysqli("example.com", "user", "password", "database");
+
+      /* Non-prepared statement */
+      $mysqli->query("DROP TABLE IF EXISTS test");
+      $mysqli->query("CREATE TABLE test(id INT, label TEXT)");
+      $mysqli->query("INSERT INTO test(id, label) VALUES (1, 'PHP')");
+
+      $stmt = $mysqli->prepare("SELECT id, label FROM test WHERE id = 1");
+      $stmt->execute();
+
+      $stmt->bind_result($out_id, $out_label);
+
+      while ($stmt->fetch()) {
+          printf("id = %s (%s), label = %s (%s)\n", $out_id, gettype($out_id), $out_label, gettype($out_label));
+      }
+      ```
+
+      - The above example will output:
+
+        ```bash
+        id = 1 (integer), label = PHP (string)
+        ```
+
+    - Prepared statements return unbuffered result sets by default. The results of the statement are not implicitly fetched and transferred from the server to the client for client-side buffering. The result set takes server resources until all results have been fetched by the client. Thus it is recommended to consume results timely. If a client fails to fetch all results or the client closes the statement before having fetched all data, the data has to be fetched implicitly by mysqli.
+
+    - It is also possible to buffer the results of a prepared statement using [mysqli_stmt::store_result()](https://www.php.net/manual/en/mysqli-stmt.store-result.php).
+
+  - _`Fetching results using mysqli_result interface`_
+
+    - Instead of using bound results, results can also be retrieved through the mysqli_result interface. `mysqli_stmt::get_result()` returns a buffered result set.
+
+    - **Example #6 Using mysqli_result to fetch results**
+
+      ```php
+      <?php
+
+      mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+      $mysqli = new mysqli("example.com", "user", "password", "database");
+
+      /* Non-prepared statement */
+      $mysqli->query("DROP TABLE IF EXISTS test");
+      $mysqli->query("CREATE TABLE test(id INT, label TEXT)");
+      $mysqli->query("INSERT INTO test(id, label) VALUES (1, 'PHP')");
+
+      $stmt = $mysqli->prepare("SELECT id, label FROM test WHERE id = 1");
+      $stmt->execute();
+
+      $result = $stmt->get_result();
+
+      var_dump($result->fetch_all(MYSQLI_ASSOC));
+      ```
+
+      - The above example will output:
+
+        ```bash
+        array(1) {
+          [0]=>
+          array(2) {
+            ["id"]=>
+            int(1)
+            ["label"]=>
+            string(3) "PHP"
+          }
+        }
+        ```
+
+    - Using the [mysqli_result](https://www.php.net/manual/en/class.mysqli-result.php) interface offers the additional benefit of flexible client-side result set navigation.
+
+    - **Example #7 Buffered result set for flexible read out**
+
+      ```php
+      <?php
+
+      mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+      $mysqli = new mysqli("example.com", "user", "password", "database");
+
+      /* Non-prepared statement */
+      $mysqli->query("DROP TABLE IF EXISTS test");
+      $mysqli->query("CREATE TABLE test(id INT, label TEXT)");
+      $mysqli->query("INSERT INTO test(id, label) VALUES (1, 'PHP'), (2, 'Java'), (3, 'C++')");
+
+      $stmt = $mysqli->prepare("SELECT id, label FROM test");
+      $stmt->execute();
+
+      $result = $stmt->get_result();
+
+      for ($row_no = $result->num_rows - 1; $row_no >= 0; $row_no--) {
+          $result->data_seek($row_no);
+          var_dump($result->fetch_assoc());
+      }
+      ```
+
+      - The above example will output:
+
+        ```bash
+        array(2) {
+          ["id"]=>
+          int(3)
+          ["label"]=>
+          string(3) "C++"
+        }
+        array(2) {
+          ["id"]=>
+          int(2)
+          ["label"]=>
+          string(4) "Java"
+        }
+        array(2) {
+          ["id"]=>
+          int(1)
+          ["label"]=>
+          string(3) "PHP"
+        }
+        ```
+
+  - _Escaping and SQL injection_
+
+    - Bound variables are sent to the server separately from the query and thus cannot interfere with it. The server uses these values directly at the point of execution, after the statement template is parsed. Bound parameters do not need to be escaped as they are never substituted into the query string directly. A hint must be provided to the server for the type of bound variable, to create an appropriate conversion. See the [mysqli_stmt::bind_param()](https://www.php.net/manual/en/mysqli-stmt.bind-param.php) function for more information.
+
+    - Such a separation sometimes considered as the only security feature to prevent SQL injection, but the same degree of security can be achieved with non-prepared statements, if all the values are formatted correctly. It should be noted that correct formatting is not the same as escaping and involves more logic than simple escaping. Thus, prepared statements are simply a more convenient and less error-prone approach to this element of database security.
+
+  - _Client-side prepared statement emulation_
+
+    - The API does not include emulation for client-side prepared statement emulation.
+
 # 3. Notes Mini-Project
 
 ## 21. Database Tables and Indexes
