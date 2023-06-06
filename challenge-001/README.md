@@ -1476,6 +1476,96 @@
 
 ## 17. PDO First Steps
 
+- About
+
+  The next step on our journey is to figure out how to connect to MySQL from PHP and execute a simple SELECT query. We'll of course reach for PHP Data Objects, or PDO, to orchestrate this task securely.
+
+- Things You'll Learn
+
+  - Select Queries
+  - DSNs
+  - PDO
+
+- Homework
+
+  Create a prepared statement to fetch the post that has an id of 1. Then, experiment with calling `fetch()` instead of `fetchAll()`. How is the output different?
+
+- PDO
+
+  - The PHP Data Objects (PDO) extension defines a lightweight, consistent interface for accessing databases in PHP. Each database driver that implements the PDO interface can expose database-specific features as regular extension functions. Note that you cannot perform any database functions using the PDO extension by itself; you must use a `database-specific PDO driver` to access a database server.
+
+  - PDO provides a data-access abstraction layer, which means that, regardless of which database you're using, you use the same functions to issue queries and fetch data. PDO does not provide a database abstraction; it doesn't rewrite SQL or emulate missing features. You should use a full-blown abstraction layer if you need that facility.
+
+  - PDO ships with PHP.
+
+- PDO_MYSQL DSN
+
+  - (PECL PDO_MYSQL >= 0.1.0)
+
+  - PDO_MYSQL DSN — Connecting to MySQL databases
+
+  - Description ¶
+
+    The PDO_MYSQL Data Source Name (DSN) is composed of the following elements:
+
+    - DSN prefix
+
+      - The DSN prefix is `mysql:`.
+
+    - host
+
+      - The hostname on which the database server resides.
+
+    - port
+
+      - The port number where the database server is listening.
+
+    - dbname
+
+      - The name of the database.
+
+    - unix_socket
+
+      - The MySQL Unix socket (shouldn't be used with `host` or `port`).
+
+    - charset
+      - The character set. See the [character set](https://www.php.net/manual/en/mysqlinfo.concepts.charset.php) concepts documentation for more information.
+
+  - Examples ¶
+
+    - **Example #1 PDO_MYSQL DSN examples**
+
+      - The following example shows a `PDO_MYSQL` DSN for connecting to MySQL databases:
+
+        ```bash
+        mysql:host=localhost;dbname=testdb
+        ```
+
+      - More complete examples:
+
+        ```bash
+        mysql:host=localhost;port=3307;dbname=testdb
+        mysql:unix_socket=/tmp/mysql.sock;dbname=testdb
+        ```
+
+- **What is PECL?**
+
+  - The PHP Extension Community Library
+
+  - PECL is a repository for PHP Extensions, providing a directory of all known extensions and hosting facilities for downloading and development of PHP extensions.
+
+  - The packaging and distribution system used by PECL is shared with its sister, `PEAR`.
+
+- **What is PEAR?**
+
+  - PEAR is short for "PHP Extension and Application Repository" and is pronounced just like the fruit. The purpose of PEAR is to provide:
+
+    - A structured library of open-source code for PHP users
+    - A system for code distribution and package maintenance
+    - A standard style for code written in PHP, specified here
+    - The PHP Extension Community Library (PECL), see more below
+    - A web site, mailing lists and download mirrors to support the PHP/PEAR community
+
 ## 18. Extract a PHP Database Class
 
 ## 19. Environments and Configuration Flexibility
