@@ -1894,6 +1894,14 @@
 
 ## 19. Environments and Configuration Flexibility
 
+- About
+
+  We have one glaring issue with our Database class right now. The connection values have been hard-coded. So what happens when we push the project to production, where the host and port are entirely different?
+
+- Things You'll Learn
+  - Environments
+  - Push Configurable Data Upward
+
 ## 20. SQL Injection Vulnerabilities Explained
 
 # 3. Notes Mini-Project
