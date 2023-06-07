@@ -3528,6 +3528,14 @@
 
 ## 34. One Request, One Controller
 
+- About
+
+  With an improved router that can respond to multiple form request types, we can now refactor our controller actions to be more focused. We'll also discuss the importance of keeping your controller actions as simple as possible.
+
+- Things You'll Learn
+  - Controller Actions
+  - Request Methods
+
 ## 35. Make Your First Service Container
 
 ## 36. Updating With PATCH Requests
