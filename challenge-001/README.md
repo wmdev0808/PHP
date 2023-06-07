@@ -2601,6 +2601,174 @@
 
 ## 30. PHP Autoloading and Extraction
 
+- About
+
+  Okay, buckle up. This will be the most dense episode yet, as we discuss a variety of topics related to project organization. We'll touch on document roots, helper functions, constants, PHP autoloading, and more.
+
+- Things You'll Learn
+
+  - Autoloading Classes
+  - Document Root
+  - extract()
+
+- Autoloading Classes
+
+  - Many developers writing object-oriented applications create one PHP source file per class definition. One of the biggest annoyances is having to write a long list of needed includes at the beginning of each script (one for each class).
+
+  - The [spl_autoload_register()](https://www.php.net/manual/en/function.spl-autoload-register.php) function registers any number of autoloaders, enabling for classes and interfaces to be automatically loaded if they are currently not defined. By registering autoloaders, PHP is given a last chance to load the class or interface before it fails with an error.
+
+  - Any class-like construct may be autoloaded the same way. That includes classes, interfaces, traits, and enumerations.
+
+  - Caution
+
+    - Prior to PHP 8.0.0, it was possible to use `__autoload()` to autoload classes and interfaces. However, it is a less flexible alternative to `spl_autoload_register()` and `__autoload()` is deprecated as of PHP 7.2.0, and removed as of PHP 8.0.0.
+
+  - Note:
+
+    - `spl_autoload_register()` may be called multiple times in order to register multiple autoloaders. Throwing an exception from an autoload function, however, will interrupt that process and not allow further autoload functions to run. For that reason, throwing exceptions from an autoload function is strongly discouraged.
+
+  - **Example #1 Autoload example**
+
+    - This example attempts to load the classes `MyClass1` and `MyClass2` from the files `MyClass1.php` and `MyClass2.php` respectively.
+
+    ```php
+    <?php
+    spl_autoload_register(function ($class_name) {
+        include $class_name . '.php';
+    });
+
+    $obj  = new MyClass1();
+    $obj2 = new MyClass2();
+    ?>
+    ```
+
+  - **Example #2 Autoload other example**
+
+    - This example attempts to load the interface ITest.
+
+    ```php
+    <?php
+
+    spl_autoload_register(function ($name) {
+        var_dump($name);
+    });
+
+    class Foo implements ITest {
+    }
+
+    /*
+    string(5) "ITest"
+
+    Fatal error: Interface 'ITest' not found in ...
+    */
+    ?>
+    ```
+
+- SPL
+
+  - The Standard PHP Library (SPL) is a collection of interfaces and classes that are meant to solve common problems.
+
+  - SPL provides a set of standard datastructure, a set of iterators to traverse over objects, a set of interfaces, a set of standard Exceptions, a number of classes to work with files and it provides a set of functions like `spl_autoload_register()`
+
+- Document Root
+
+  - By default, we can access all the php files inside the document root, for example, localhost:8888/router.php, localhost:8888/config.php.
+
+    - These are all security issues.
+
+  - So we are fixing this issue by setting the specific folder(for example, /public) as document root.
+
+  ```bash
+  php -S localhost:8888 -t public
+  ```
+
+- extract
+
+  - (PHP 4, PHP 5, PHP 7, PHP 8)
+
+  - extract — Import variables into the current symbol table from an array
+
+  - Description ¶
+
+    ```php
+    extract(array &$array, int $flags = EXTR_OVERWRITE, string $prefix = ""): int
+    ```
+
+    - Import variables from an array into the current symbol table.
+
+    - Checks each key to see whether it has a valid variable name. It also checks for collisions with existing variables in the symbol table.
+
+    - **Warning**
+      - Do not use `extract()` on untrusted data, like user input (e.g. `$_GET`, `$_FILES`).
+
+  - Parameters ¶
+
+    - array
+
+      - An associative array. This function treats keys as variable names and values as variable values. For each key/value pair it will create a variable in the current symbol table, subject to `flags` and `prefix` parameters.
+
+      - You must use an associative array; a numerically indexed array will not produce results unless you use `EXTR_PREFIX_ALL` or `EXTR_PREFIX_INVALID`.
+
+    - flags
+
+      - The way invalid/numeric keys and collisions are treated is determined by the extraction flags. It can be one of the following values:
+
+      - EXTR_OVERWRITE
+        - If there is a collision, overwrite the existing variable.
+      - EXTR_SKIP
+        - If there is a collision, don't overwrite the existing variable.
+      - EXTR_PREFIX_SAME
+        - If there is a collision, prefix the variable name with prefix.
+      - EXTR_PREFIX_ALL
+        - Prefix all variable names with prefix.
+      - EXTR_PREFIX_INVALID
+        - Only prefix invalid/numeric variable names with prefix.
+      - EXTR_IF_EXISTS
+        - Only overwrite the variable if it already exists in the current symbol table, otherwise do nothing. This is useful for defining a list of valid variables and then extracting only those variables you have defined out of $\_REQUEST, for example.
+      - EXTR_PREFIX_IF_EXISTS
+        - Only create prefixed variable names if the non-prefixed version of the same variable exists in the current symbol table.
+      - EXTR_REFS
+        - Extracts variables as references. This effectively means that the values of the imported variables are still referencing the values of the array parameter. You can use this flag on its own or combine it with any other flag by OR'ing the flags.
+          If flags is not specified, it is assumed to be EXTR_OVERWRITE.
+
+    - prefix
+      - Note that `prefix` is only required if flags is `EXTR_PREFIX_SAME`, `EXTR_PREFIX_ALL`, `EXTR_PREFIX_INVALID` or `EXTR_PREFIX_IF_EXISTS`. If the prefixed result is not a valid variable name, it is not imported into the symbol table. Prefixes are automatically separated from the array key by an underscore character.
+
+  - Return Values ¶
+
+    - Returns the number of variables successfully imported into the symbol table.
+
+  - Examples ¶
+
+    - **Example #1 extract() example**
+
+      - A possible use for `extract()` is to import into the symbol table variables contained in an associative array returned by [wddx_deserialize()](https://www.php.net/manual/en/function.wddx-deserialize.php).
+
+      ```php
+      <?php
+
+      /* Suppose that $var_array is an array returned from
+        wddx_deserialize */
+
+      $size = "large";
+      $var_array = array("color" => "blue",
+                        "size"  => "medium",
+                        "shape" => "sphere");
+      extract($var_array, EXTR_PREFIX_SAME, "wddx");
+
+      echo "$color, $size, $shape, $wddx_size\n";
+
+      ?>
+      ```
+
+      - The above example will output:
+
+        ```bash
+        blue, large, sphere, medium
+        ```
+
+      - The `$size` wasn't overwritten because we specified `EXTR_PREFIX_SAME`, which resulted in `$wddx_size` being created. If `EXTR_SKIP` was specified, then `$wddx_size` wouldn't even have been created. `EXTR_OVERWRITE` would have caused `$size` to have value "medium", and `EXTR_PREFIX_ALL` would result in new variables being named `$wddx_color`, `$wddx_size`, and `$wddx_shape`.
+
 ## 31. Namespacing: What, Why, How?
 
 ## 32. Handle Multiple Request Methods From a Controller Action?
