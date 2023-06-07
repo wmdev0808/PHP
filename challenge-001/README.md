@@ -2397,6 +2397,14 @@
 
 ## 24. Programming is Rewriting
 
+- About
+
+  Before we move on to building a form to persist new notes to the database, let's take ten minutes to refactor our current code and discuss wrapping up APIs you don't own.
+
+- Things You'll Learn
+  - Refactoring
+  - API Ownership
+
 ## 25. Intro to Forms and Request Methods
 
 ## 26. Always Escape Untrusted Input
