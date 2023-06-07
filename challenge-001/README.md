@@ -2383,6 +2383,18 @@
 
 ## 23. Introduction to Authorization
 
+- About
+
+  In the previous episode, we added support for reading all notes that were created by a particular user. But, in doing so, we unwittingly introduced a major security concern. In this lesson, we'll discuss authorization, status codes, and magic numbers.
+
+- Things You'll Learn
+
+  - Authorization
+
+  - Magic Numbers
+
+  - Status Codes
+
 ## 24. Programming is Rewriting
 
 ## 25. Intro to Forms and Request Methods
