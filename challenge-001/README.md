@@ -3517,6 +3517,15 @@
 
 ## 33. Build a Better Router
 
+- About
+
+  In this episode, we'll build a better router that can handle and respond to any form request type. However, because forms only natively support GET and POST, we'll need to use a hidden input field to spoof the request type.
+
+- Things You'll Learn
+  - Request Methods
+  - Request Type Spoofing
+  - Routing
+
 ## 34. One Request, One Controller
 
 ## 35. Make Your First Service Container
