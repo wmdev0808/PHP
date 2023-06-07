@@ -2407,6 +2407,15 @@
 
 ## 25. Intro to Forms and Request Methods
 
+- About
+
+  We're overdue, but it's finally time to dig into forms. In this lesson, we'll learn how to submit a form using two different request methods. Next, we'll discuss how our controller might detect whether a POST submission has occurred.
+
+- Things You'll Learn
+  - Forms
+  - GET Requests
+  - POST Requests
+
 ## 26. Always Escape Untrusted Input
 
 ## 27. Intro to Form Validation
