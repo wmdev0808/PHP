@@ -2373,6 +2373,14 @@
 
 ## 22. Render the Notes and Note Page
 
+- About
+
+  Now that we have the initial database structure in place, let's create one page to display all of John Doe's notes, and then another page for each individual note.
+
+- Things You'll Learn
+
+  - Fetch Notes By User
+
 ## 23. Introduction to Authorization
 
 ## 24. Programming is Rewriting
