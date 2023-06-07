@@ -2363,6 +2363,14 @@
 
 ## 21. Database Tables and Indexes
 
+- About
+
+  - You've learned enough of the fundamentals at this point to begin working on your first mini-project. Let's make a notes app! We'll begin with the initial database structure, which will give us the opportunity to review MySQL indexes.
+
+- Things You'll Learn
+  - Table Relationships
+  - Indexes
+
 ## 22. Render the Notes and Note Page
 
 ## 23. Introduction to Authorization
