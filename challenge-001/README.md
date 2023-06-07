@@ -2578,6 +2578,15 @@
 
 ## 28. Extract a Simple Validator Class
 
+- About
+
+  To make for a more flexible and readable experience, let's extract the basic validation rules we wrote in the previous episode into a dedicated Validator class.
+
+- Things You'll Learn
+  - Validation
+  - Pure Functions
+  - Static Methods
+
 # 4. Project Organization
 
 ## 29. Resourceful Naming Conventions
