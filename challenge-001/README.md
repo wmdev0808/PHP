@@ -2514,6 +2514,68 @@
 
 ## 27. Intro to Form Validation
 
+- About
+
+  In this lesson, we'll review two layers of form validation: browser and server-side. We can use validation to ensure and confirm that the user submits their data in the exact format that we require.
+
+- Things You'll Learn
+
+  - Browser Validation
+  - Server-side Validation
+  - strlen()
+
+- Browser validation is useful because it provides us instant feedback
+
+  - For example, you can add `required` attribute to the form field.
+  - But browser validation is not sufficient
+
+    - User can bypass the validation, for example:
+
+      ```bash
+      curl -X POST http://localhost:8888/notes/create -d 'body='
+      ```
+
+- strlen
+
+  - (PHP 4, PHP 5, PHP 7, PHP 8)
+
+  - strlen — Get string length
+
+  - Description ¶
+
+    ```php
+    strlen(string $string): int
+    ```
+
+    - Returns the length of the given string.
+
+  - Parameters ¶
+
+    - string
+      - The string being measured for length.
+
+  - Return Values ¶
+
+    - The length of the string in bytes.
+
+  - Examples ¶
+
+    - **Example #1 A strlen() example**
+
+      ```php
+      <?php
+      $str = 'abcdef';
+      echo strlen($str); // 6
+
+      $str = ' ab cd ';
+      echo strlen($str); // 7
+      ?>
+      ```
+
+  - Notes ¶
+    - Note:
+      - strlen() returns the number of bytes rather than the number of characters in a string.
+
 ## 28. Extract a Simple Validator Class
 
 # 4. Project Organization
