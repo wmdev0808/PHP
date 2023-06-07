@@ -2591,6 +2591,14 @@
 
 ## 29. Resourceful Naming Conventions
 
+- About
+
+  Let's take a short pause on the notes exercise, and instead switch our attention to general code organization. We'll start by switching to a common naming convention for resources.
+
+- Things You'll Learn
+  - Resources
+  - Common Action Names
+
 ## 30. PHP Autoloading and Extraction
 
 ## 31. Namespacing: What, Why, How?
