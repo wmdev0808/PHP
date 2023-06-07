@@ -3507,6 +3507,14 @@
 
 ## 32. Handle Multiple Request Methods From a Controller Action?
 
+- About
+
+  Over the next three episodes, we'll review a number of refactors that are a bit more advanced. But first, we need to encounter a situation that necessitates the refactors. We'll use the example of a messy controller action that can respond to multiple request types.
+
+- Things You'll Learn
+  - Request Methods
+  - Delete Forms
+
 ## 33. Build a Better Router
 
 ## 34. One Request, One Controller
