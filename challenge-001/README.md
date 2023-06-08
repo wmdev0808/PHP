@@ -3663,6 +3663,14 @@
 
 ## 38. Register a New User
 
+- About
+
+  - Now that we understand the basics of PHP session handling, we can build our first registration form. Once filled, we can create a new user in the database and then update the session to "mark" them as signed in.
+
+- Things You'll Learn
+  - Registration
+  - Sessions
+
 ## 39. Introduction to Middleware
 
 ## 40. Manage Passwords Like This For The Remainder of Your Career
