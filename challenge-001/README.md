@@ -3874,6 +3874,15 @@
 
 ## 41. Log In and Log Out
 
+- About
+
+  Now that we have a functioning registration form, we can finally build out the login system. As you'll see, there's a small handful of confusing, low-level steps that we need to follow - particularly when logging a user out.
+
+- Things You'll Learn
+  - Authentication
+  - Expiring Cookies
+  - Destroying a Session
+
 # 6. Refactoring Techniques
 
 ## 42. Extract a Form Validation Object
