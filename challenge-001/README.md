@@ -3561,6 +3561,106 @@
 
 ## 37. PHP Sessions 101
 
+- About
+
+  Welcome to a new chapter! We'll now begin to explore the world of PHP sessions. We'll start by discussing the concept of sessions, and how they can be used to persist data across multiple requests.
+
+- Things You'll Learn
+
+  - Sessions
+  - Session Files
+  - Cookies
+
+- Sessions
+
+  - Introduction
+
+    - Session support in PHP consists of a way to preserve certain data across subsequent accesses.
+
+    - A visitor accessing your web site is assigned a unique id, the so-called session id. This is either stored in a cookie on the user side or is propagated in the URL.
+
+    - The session support allows you to store data between requests in the `$_SESSION` superglobal array. When a visitor accesses your site, PHP will check automatically (if `session.auto_start` is set to 1) or on your request (explicitly through `session_start()`) whether a specific session id has been sent with the request. If this is the case, the prior saved environment is recreated.
+
+    - Caution
+
+      - If you turn on `session.auto_start` then the only way to put objects into your sessions is to load its class definition using `auto_prepend_file` in which you load the class definition else you will have to `serialize()` your object and `unserialize()` it afterwards.
+
+    - `$_SESSION` (and all registered variables) are serialized internally by PHP using the serialization handler specified by the `session.serialize_handler` ini setting, after the request finishes. Registered variables which are undefined are marked as being not defined. On subsequent accesses, these are not defined by the session module unless the user defines them later.
+
+    - Warning
+
+      - Because session data is serialized, resource variables cannot be stored in the session.
+
+      - Serialize handlers (php and php_binary) inherit register_globals limitations. Therefore, numeric index or string index contains special characters (| and !) cannot be used. Using these will end up with errors at script shutdown. php_serialize does not have such limitations.
+
+    - Note:
+
+      - Please note when working with sessions that a record of a session is not created until a variable has been registered using the `session_register()` function or by adding a new key to the `$_SESSION` superglobal array. This holds true regardless of if a session has been started using the `session_start()` function.
+
+  - Basic usage
+
+    - Sessions are a simple way to store data for individual users against a unique session ID. This can be used to persist state information between page requests. Session IDs are normally sent to the browser via session cookies and the ID is used to retrieve existing session data. The absence of an ID or session cookie lets PHP know to create a new session, and generate a new session ID.
+
+    - Sessions follow a simple workflow. When a session is started, PHP will either retrieve an existing session using the ID passed (usually from a session cookie) or if no session is passed it will create a new session. PHP will populate the `$_SESSION` superglobal with any session data after the session has started. When PHP shuts down, it will automatically take the contents of the `$_SESSION` superglobal, serialize it, and send it for storage using the session save handler.
+
+    - By default, PHP uses the internal files save handler which is set by `session.save_handler`. This saves session data on the server at the location specified by the `session.save_path` configuration directive.
+
+    - Sessions can be started manually using the `session_start()` function. If the `session.auto_start` directive is set to 1, a session will automatically start on request startup.
+
+    - Sessions normally shutdown automatically when PHP is finished executing a script, but can be manually shutdown using the `session_write_close()` function.
+
+    - **Example #1 Registering a variable with $\_SESSION.**
+
+      ```php
+      <?php
+      session_start();
+      if (!isset($_SESSION['count'])) {
+        $_SESSION['count'] = 0;
+      } else {
+        $_SESSION['count']++;
+      }
+      ?>
+      ```
+
+    - **Example #2 Unregistering a variable with $\_SESSION.**
+
+      ```php
+      <?php
+      session_start();
+      unset($_SESSION['count']);
+      ?>
+      ```
+
+    - Caution
+
+      - Do NOT unset the whole `$_SESSION` with `unset($_SESSION)` as this will disable the registering of session variables through the `$_SESSION` superglobal.
+
+    - Warning
+
+      - You can't use references in session variables as there is no feasible way to restore a reference to another variable.
+
+    - Note:
+
+      - File based sessions (the default in PHP) lock the session file once a session is opened via `session_start()` or implicitly via session.auto_start. Once locked, no other script can access the same session file until it has been closed by the first script terminating or calling `session_write_close()`.
+
+      - This is most likely to be an issue on Web sites that use AJAX heavily and have multiple concurrent requests. The easiest way to deal with it is to call `session_write_close()` as soon as any required changes to the session have been made, preferably early in the script. Alternatively, a different session backend that does support concurrency could be used.
+
+  - session_start
+
+    - (PHP 4, PHP 5, PHP 7, PHP 8)
+
+    - session_start — Start new or resume existing session
+
+    - Description ¶
+
+      ```php
+      session_start(array $options = []): bool
+      ```
+
+      - `session_start()` creates a session or resumes the current one based on a session identifier passed via a GET or POST request, or passed via a cookie.
+
+      - When `session_start()` is called or when a session auto starts, PHP will call the open and read session save handlers. These will either be a built-in save handler provided by default or by PHP extensions (such as SQLite or Memcached); or can be custom handler as defined by `session_set_save_handler()`. The read callback will retrieve any existing session data (stored in a special serialized format) and will be unserialized and used to automatically populate the `$_SESSION` superglobal when the read callback returns the saved session data back to PHP session handling.
+
 ## 38. Register a New User
 
 ## 39. Introduction to Middleware
