@@ -3549,6 +3549,14 @@
 
 ## 36. Updating With PATCH Requests
 
+- About
+
+  The only remaining step for our first resource is to support editing notes. Luckily, most of the legwork has been completed at this point. We only need to create the form, and register a corresponding route and controller.
+
+- Things You'll Learn
+  - PATCH Requests
+  - Validation Duplication
+
 # 5. Sessions and Authentication
 
 ## 37. PHP Sessions 101
