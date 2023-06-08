@@ -3538,6 +3538,15 @@
 
 ## 35. Make Your First Service Container
 
+- About
+
+  In this episode, we'll discuss the concept of a service container, and how it can help us organize our code and remove the need to manually construct the same dependencies over and over again.
+
+- Things You'll Learn
+  - Service Containers
+  - Static Methods
+  - Automatic Resolution
+
 ## 36. Updating With PATCH Requests
 
 # 5. Sessions and Authentication
