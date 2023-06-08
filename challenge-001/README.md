@@ -3852,6 +3852,26 @@
 
 ## 40. Manage Passwords Like This For The Remainder of Your Career
 
+- About
+
+  Up until this point, we've been storing passwords in clear text (gasp)! Let's fix that. In this episode, we'll discuss the importance of password hashing, and why it's necessary to protect your users' sensitive data. We'll also discuss the Bcrypt algorithm, and how it can be used to generate secure hashes.
+
+- Things You'll Learn
+
+  - Functioning registration system and simplified route middleware discussed.
+
+  - Password security and hashing revisited for improved user experience.
+
+  - Storing passwords in clear text identified as a significant security concern.
+
+  - PHP's built-in function, `password_hash`, introduced for hashing passwords.
+
+  - Bcrypt algorithm recommended as a secure password hashing method.
+
+  - Hashed password storage demonstrated for better security.
+
+  - Importance of using hashed passwords in all user registration systems emphasized.
+
 ## 41. Log In and Log Out
 
 # 6. Refactoring Techniques
