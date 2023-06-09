@@ -3946,6 +3946,37 @@
 
 ## 44. The PRG Pattern (and Session Flashing)
 
+- About
+
+  In this episode, we'll discuss the PRG (Post-Redirect-Get) pattern, and how it can be used to prevent duplicate form submissions. Currently, we're returning a view directly from the POST request in the event of failed validation, however, this is far from ideal. Let's review the problem, and then seek a solution.
+
+  - Problem 1:
+
+    - We're going to submit the login form, but force the validation to fail here.
+    - If we click the refresh button, you'll get a little modal that says like this: "To display this page, Firefox must send information that will repeat any action.".
+    - You did a post request before, and if you refresh this page, we're still going to perform that very same post request.
+
+    - With the current implementation, we have a risk of effectively duplicate form submissions, which again is not something we wanna allow.
+
+  - Problem 2:
+
+    - If we were to once again, submit the form, it fails, and then we click away, for example, clicking on the link to the Contact page.
+    - Let's go back to that login page.
+    - We see document expired
+
+  - Solution:
+
+    - To fix these two issues, we are introducing PRG pattern
+
+    - P for post, you're going to make a post request to submit the form.
+    - And then if the validation fails, we don't return a view, we perform a redirect. That's the R.
+    - That redirect will send us to a new page where we then perform a get request. And that's where the G comes into play.
+
+  - How can we literally pass these validation errors on to the next page request?
+    - We can use session to store errors
+    - But we revisit the login page, we see all of the stale validation data that doesn't apply anymore.
+    - We need a way to distinguish between data that should live in the session indefinitely and then data that should instead be flashed to the session for one page request, and then it immediately expires, so to speak.
+
 ## 45. Flash Old Form Data to the Session
 
 ## 46. Automatically Redirect Back Upon Failed Validation
