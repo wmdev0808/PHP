@@ -3979,6 +3979,26 @@
 
 ## 45. Flash Old Form Data to the Session
 
+- About
+
+  - Now that we understand how to temporarily "flash" data to the session, we can now return to the topic of displaying "old" form data to the user.
+
+- Things You'll Learn
+
+  - Identified that old form data is not shown after a failed login attempt.
+
+  - Flashes old form data (email) to remember it when redirected back to the form.
+
+  - Uses session `_flash` to retrieve old email value for the login page.
+
+  - Improves the code by using the `Session::get('old')` method.
+
+  - Introduces a new helper function named `old()` to fetch old form data.
+
+  - Refactors the code to use the new `old()` function in the login page.
+
+  - Mentions that the controller refactoring is not yet complete and more improvements will be shown next.
+
 ## 46. Automatically Redirect Back Upon Failed Validation
 
 # 7. Meet Composer
