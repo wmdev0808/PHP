@@ -3924,6 +3924,26 @@
 
 ## 43. Extract an Authenticator Class
 
+- About
+
+  Next up, we can further clean up our controller and improve clarity by extracting an Authenticator class. This new class can then be responsible for handling the actual authentication logic.
+
+- Things You'll Learn
+
+  - Creating a new class called Authenticator.
+
+  - Considering which parameters to pass to the attempt method.
+
+  - Passing email and password to the attempt method.
+
+  - Resolving the DB class out of the container.
+
+  - Moving login and logout methods into the Authenticator class.
+
+  - Making the attempt method return a Boolean.
+
+  - Creating a helper function redirectTo for handling redirects.
+
 ## 44. The PRG Pattern (and Session Flashing)
 
 ## 45. Flash Old Form Data to the Session
