@@ -3887,6 +3887,41 @@
 
 ## 42. Extract a Form Validation Object
 
+- About
+
+  For our first refactoring exercise, we'll extract a login form validation object. This approach will allow us to keep our controllers lean, clear, and easier to potentially reuse in other places.
+
+- Things You'll Learn
+
+  - Discussing code from previous episode that handles form validation and user login.
+
+  - Introducing the idea of creating a LoginForm class for handling validation.
+
+  - Storing application-related content in the Http directory.
+
+  - Simplifying controller references in the routes file.
+
+  - Separating unique application code from core infrastructure code.
+
+  - Creating the LoginForm class to handle validation.
+
+  - Going through the refactoring process, moving validation code to the LoginForm class.
+
+- PHP RFC: Deprecate ${} string interpolation
+
+  - Proposal
+
+    - PHP allows embedding variables in strings with double-quotes (") and heredoc in various ways.
+
+    1. Directly embedding variables (“$foo”)
+    2. Braces outside the variable (“{$foo}”)
+    3. Braces after the dollar sign (“${foo}”)
+    4. Variable variables (“${expr}”, equivalent to (string) ${expr})
+
+    - Options 1 and 2 have their pros and cons. Options 3 and 4 are easily confused due to overlapping syntax, 3 is strictly less capable than 1 and 2, and 4 has completely different semantics (variable variables) that are rarely useful in string interpolation.
+
+    - This RFC proposes to deprecate options 3 and 4 in PHP 8.2 and remove them in PHP 9.0.
+
 ## 43. Extract an Authenticator Class
 
 ## 44. The PRG Pattern (and Session Flashing)
