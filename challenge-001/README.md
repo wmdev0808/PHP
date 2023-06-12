@@ -1,8 +1,31 @@
+- About
+
+  - We all start somewhere. For programming, this series is that first step. I've designed it specifically for newcomers to, not just PHP, but programming in general. Here, you'll learn the fundamentals of PHP - all the way down to defining basic variables and arrays.
+
+  - Think of this series as a key stepping stone for your programming journey.
+
 # 1. The Fundamentals
 
 ## 1. How to Choose a Programming Language
 
+- About
+
+  How exactly do you choose a first programming to learn? Why PHP, and not Ruby? And what about JavaScript or Python? How can you possibly be expected to make an educated decision at this early stage of your learning?
+
+- Things You'll Learn
+
+  - Programming Choices
+
 ## 2. Tools of the Trade
+
+- About
+
+  Before we can dig in, we must first create the world, so to speak. To follow along with this series, you'll need to install a handful of essential tools. Let's go over them in this episode.
+
+- Things You'll Learn
+  - Code Editors
+  - Local Environments
+  - Terminals
 
 ## 3. Your First PHP Tag
 
