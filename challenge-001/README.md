@@ -4048,3 +4048,146 @@
     - It will show issues on your current composer autoload setting
 
 ## 48. Install Two Composer Packages: Collections and PestPHP
+
+- About
+
+  Now that we've learned how to install Composer, itself, the next step is to pull in some packages! For demonstration purposes, we'll install two separate packages.
+
+- Things You'll Learn
+
+  - Introduction to installing packages with Composer.
+
+  - Research packages from the command line using Composer.
+
+  - Documentation for a repository is usually available on GitHub.
+
+  - Demonstration of using operators and functions on a collection in PHP.
+
+  - Is it worth building your own collection class?
+
+  - Automated tests help me confirm functionality and maintain confidence in refactoring.
+
+- Search packages
+
+  ```bash
+  composer search collections
+  ```
+
+- Install packages
+
+  - illuminate/collections
+
+    ```bash
+    composer require illuminate/collections
+    ```
+
+- In VS code, in order for Intelephense to recognize newly added classes
+
+  - Try `Intelephense: Index workspace` form Command palette (F1)
+
+- Arrow Functions
+
+  - Arrow functions were introduced in PHP 7.4 as a more concise syntax for anonymous functions.
+
+  - Both anonymous functions and arrow functions are implemented using the `Closure` class.
+
+  - Arrow functions have the basic form `fn (argument_list) => expr`.
+
+  - Arrow functions support the same features as anonymous functions, except that using variables from the parent scope is always automatic.
+
+    - When a variable used in the expression is defined in the parent scope it will be implicitly captured by-value. In the following example, the functions `$fn1` and `$fn2` behave the same way.
+
+    - **Example #1 Arrow functions capture variables by value automatically**
+
+      ```php
+      <?php
+
+      $y = 1;
+
+      $fn1 = fn($x) => $x + $y;
+      // equivalent to using $y by value:
+      $fn2 = function ($x) use ($y) {
+          return $x + $y;
+      };
+
+      var_export($fn1(3));
+      ?>
+      ```
+
+      - The above example will output:
+
+        ```bash
+        4
+        ```
+
+    - This also works if the arrow functions are nested:
+
+    - **Example #2 Arrow functions capture variables by value automatically, even when nested**
+
+      ```php
+      <?php
+
+      $z = 1;
+      $fn = fn($x) => fn($y) => $x * $y + $z;
+      // Outputs 51
+      var_export($fn(5)(10));
+      ?>
+      ```
+
+  - Similarly to anonymous functions, the arrow function syntax allows arbitrary function signatures, including parameter and return types, default values, variadics, as well as by-reference passing and returning. All of the following are valid examples of arrow functions:
+
+    - **Example #3 Examples of arrow functions**
+
+      ```php
+      <?php
+
+      fn(array $x) => $x;
+      static fn(): int => $x;
+      fn($x = 42) => $x;
+      fn(&$x) => $x;
+      fn&($x) => $x;
+      fn($x, ...$rest) => $rest;
+
+      ?>
+      ```
+
+  - Arrow functions use by-value variable binding. This is roughly equivalent to performing a `use($x)` for every variable `$x` used inside the arrow function. A by-value binding means that it is not possible to modify any values from the outer scope. `Anonymous functions` can be used instead for by-ref bindings.
+
+    - **Example #4 Values from the outer scope cannot be modified by arrow functions**
+
+      ```php
+      <?php
+
+      $x = 1;
+      $fn = fn() => $x++; // Has no effect
+      $fn();
+      var_export($x);  // Outputs 1
+
+      ?>
+      ```
+
+- Pest
+
+  - https://pestphp.com/
+
+  - Installation
+
+    - Requirements: PHP 8.1+
+
+    - The first step is to require Pest as a "dev" dependency in your project by running the following command on your command line.
+
+    ```bash
+    composer require pestphp/pest --dev --with-all-dependencies
+    ```
+
+    - Secondly, you'll need to initialize Pest in your current PHP project. This step will create a configuration file named Pest.php at the root level of your test suite, which will enable you to fine-tune your test suite later.
+
+    ```bash
+    ./vendor/bin/pest --init
+    ```
+
+    - Finally, you can run your tests by executing the pest command.
+
+    ```bash
+    ./vendor/bin/pest
+    ```
