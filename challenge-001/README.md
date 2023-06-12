@@ -4001,6 +4001,10 @@
 
 ## 46. Automatically Redirect Back Upon Failed Validation
 
+- About
+
+  Next up, we'll learn how to automatically redirect back to the form upon failed validation. If we can manage to get this to work, we'll remove a significant amount of duplication and clutter from our various controllers.
+
 # 7. Meet Composer
 
 ## 47. Composer and Free Autoloading
