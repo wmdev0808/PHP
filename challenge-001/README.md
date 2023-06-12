@@ -4009,4 +4009,22 @@
 
 ## 47. Composer and Free Autoloading
 
+- About
+
+  I think it's time to move on to a new chapter and finally discuss Composer. Composer is a world-class dependency manager that allows us to declare any and all libraries or packages that our project requires. Then, with a single command, we can install them in seconds. Even better, it ships with an excellent autoloader.
+
+- Things You'll Learn
+
+  - Instructions for adding composer.phar to your path.
+
+  - Navigating through package settings.
+
+  - Composer.json is the configuration file for Composer.
+
+  - Composer ships with a great autoloader.
+
+  - Explaining namespace separator and PSR-4 prefixes.
+
+  - Delete our old autoloader function and switch to Composer's.
+
 ## 48. Install Two Composer Packages: Collections and PestPHP
