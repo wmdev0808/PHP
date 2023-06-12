@@ -1,0 +1,16 @@
+{
+  "name": "paulli/demo",
+  "authors": [
+    {
+      "name": "Paul Li",
+      "email": "wmdev0808@gmail.com"
+    }
+  ],
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "Core\\": "Core/",
+      "Http\\": "Http/"
+    }
+  }
+}

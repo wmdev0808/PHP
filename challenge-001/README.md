@@ -4027,4 +4027,24 @@
 
   - Delete our old autoloader function and switch to Composer's.
 
+- Composer
+
+  - https://getcomposer.org/
+
+    - A Dependency Manager for PHP
+
+  - https://packagist.org/
+
+    - The PHP Package Repository
+
+  - Install composer
+  - `composer init` to create a `composer.json`
+
+  - `composer install`
+
+    - Installs the project dependencies from the composer.lock file if present, or falls back on the composer.json
+
+  - `composer dump-autoload`
+    - It will show issues on your current composer autoload setting
+
 ## 48. Install Two Composer Packages: Collections and PestPHP
