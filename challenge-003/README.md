@@ -40,6 +40,12 @@
 
   Next up, we have [named parameters](https://wiki.php.net/rfc/named_params). This new PHP 8 feature allows you to pass function arguments according to, not their order, but the parameter name, itself. Let's discuss the pros and cons of adopting named parameters/arguments in your own projects.
 
+  - Pros and Cons
+    - Pros
+      - Improve readability
+    - Cons
+      - Your code is coupled to the parameter, for example, chaning the name of a parameter lead to change all of the matches
+
 ## 07. New String Helpers
 
 - About
