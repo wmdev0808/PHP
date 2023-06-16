@@ -58,6 +58,12 @@
 
   Weak maps are effectively key value stores that allow for garbage collection. You won't reach for these often, but they're nonetheless an important tool to have in your belt.
 
+- Pros: Support Garbage Collection
+
+- Use case
+
+  - You want to associate an object with a piece of data
+
 ## 09. Union and Pseudo Types
 
 - About
