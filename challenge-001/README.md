@@ -23,9 +23,96 @@
   Before we can dig in, we must first create the world, so to speak. To follow along with this series, you'll need to install a handful of essential tools. Let's go over them in this episode.
 
 - Things You'll Learn
+
   - Code Editors
   - Local Environments
   - Terminals
+
+- phpenv - PHP multi-version installation
+
+  - Repo: https://github.com/phpenv/phpenv
+
+  - Webserver Setup
+
+    - PHP-FPM
+
+      - php-fpm can be started in one of the following ways:
+
+        - using an init script: by running `~/.phpenv/versions/$VERSION/etc/init.d/php-fpm`
+        - using systemd: by installing `~/.phpenv/versions/$VERSION/etc/systemd/system/php-fpm.service`
+        - using an init script: by writing your own custom init script
+        - using systemd: by writing your own custom systemd unit
+        - manually: by running `php-fpm (8)` and supplying command-line arguments
+
+- PHP Intelephense
+
+  - PHP code intelligence for Visual Studio Code.
+
+  - Quick Start
+
+    - 1. Disable the built-in VSCode PHP Language Features.
+
+      - Go to `Extensions`.
+      - Search for `@builtin php`
+      - Disable `PHP Language Features`. Leave `PHP Language Basics` enabled for syntax highlighting.
+
+      - Note that other (3rd party) PHP extensions which provide similar functionality should also be disabled for best results.
+
+    - 2. Add glob patterns for non standard php file extensions to the `files.associations` setting.
+
+      - For example: `"files.associations": { "*.module": "php" }`.
+
+- PHP coding Standards Fixer
+
+  - Installation
+
+    ```bash
+    composer global require friendsofphp/php-cs-fixer
+    ```
+
+    - Then make sure you have the global Composer binaries directory in your `PATH`.
+
+      ```bash
+      export PATH="$PATH:$HOME/.composer/vendor/bin"
+      ```
+
+  - Update
+
+    ```bash
+    ./composer.phar global update friendsofphp/php-cs-fixer
+    ```
+
+- PHP CS Fixer for Visual Studio Code
+
+  - This extension simply provides `PHP CS Fixer` command.
+  - Configuration:
+
+    ```json
+    {
+      "php-cs-fixer.executablePath": "php-cs-fixer",
+      "php-cs-fixer.executablePathWindows": "", //eg: php-cs-fixer.bat
+      "php-cs-fixer.onsave": false,
+      "php-cs-fixer.rules": "@PSR12",
+      "php-cs-fixer.config": ".php-cs-fixer.php;.php-cs-fixer.dist.php;.php_cs;.php_cs.dist",
+      "php-cs-fixer.allowRisky": false,
+      "php-cs-fixer.pathMode": "override",
+      "php-cs-fixer.ignorePHPVersion": false,
+      "php-cs-fixer.exclude": [],
+      "php-cs-fixer.autoFixByBracket": true,
+      "php-cs-fixer.autoFixBySemicolon": false,
+      "php-cs-fixer.formatHtml": false,
+      "php-cs-fixer.documentFormattingProvider": true
+    }
+    ```
+
+    - VS Code Settings:
+
+      ```json
+      "[php]": {
+        "editor.tabSize": 4,
+        "editor.defaultFormatter": "junstyle.php-cs-fixer"
+      },
+      ```
 
 ## 3. Your First PHP Tag
 
