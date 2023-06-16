@@ -32,6 +32,53 @@
 
   - Repo: https://github.com/phpenv/phpenv
 
+    ### Installation
+
+    - This will get you going with the latest version of phpenv and make it easy to fork and contribute any changes back upstream.
+
+    1.  Check out phpenv into `~/.phpenv`.
+
+            $ git clone git@github.com:phpenv/phpenv.git ~/.phpenv
+
+    2.  Add `~/.phpenv/bin` to your `$PATH` for access to the `phpenv`
+        command-line utility.
+
+              $ echo 'export PATH="$HOME/.phpenv/bin:$PATH"' >> ~/.bash_profile
+
+    3.  Add phpenv init to your shell to enable shims and autocompletion.
+
+            $ echo 'eval "$(phpenv init -)"' >> ~/.bash_profile
+
+    4.  Restart your shell so the path changes take effect. You can now
+        begin using phpenv.
+
+              $ exec $SHELL -l
+
+    5.  (Optional) Install php-build into it and any php. (See [php-build][php-build-url] home)
+
+            $ git clone https://github.com/php-build/php-build $(phpenv root)/plugins/php-build
+            $ phpenv install [any php version]
+
+    6.  (Optional) Rebuild the shim binaries. You should do this any time you install
+        a new PHP binary.
+
+              $ phpenv rehash
+
+    ### Upgrading
+
+    If you've installed phpenv using the instructions above, you can
+    upgrade your installation at any time using git.
+
+    To upgrade to the latest development version of phpenv, use `git pull`:
+
+        $ cd ~/.phpenv
+        $ git pull
+
+    To upgrade `php-build` for latest PHP definitions:
+
+        $ cd ~/.phpenv/plugins/php-build
+        $ git pull
+
   - Webserver Setup
 
     - PHP-FPM
@@ -43,6 +90,15 @@
         - using an init script: by writing your own custom init script
         - using systemd: by writing your own custom systemd unit
         - manually: by running `php-fpm (8)` and supplying command-line arguments
+
+  - Xdebug Configuration:
+
+    - /home/dev/.phpenv/versions/8.2.6/etc/conf.d/xdebug.ini
+
+          zend_extension="/home/dev/.phpenv/versions/8.2.6/lib/php/extensions/no-debug-non-zts-20220829/xdebug.so"
+          html_errors=on
+          xdebug.mode=debug
+          xdebug.start_with_request=yes
 
 - PHP Intelephense
 
